@@ -386,7 +386,7 @@
         }
         protected virtual void OnTouchFingerUp(TouchFingerEventArgs e)
         {
-            ((TouchFingerEventHandler?)eventHandlerList[touchFingerDownEventKey])?.Invoke(this, e);
+            ((TouchFingerEventHandler?)eventHandlerList[touchFingerUpEventKey])?.Invoke(this, e);
         }
 
         protected virtual void OnTouchFingerMotion(TouchFingerEventArgs e)
