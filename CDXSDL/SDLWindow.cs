@@ -322,7 +322,20 @@
 
         internal void RaiseControllerAxis(int which, ControllerAxis axis, int value, Vector2 dir)
         {
-            OnControllerAxis(new ControllerAxisEventArgs(which, axis, value,dir));
+            OnControllerAxis(new ControllerAxisEventArgs(which, axis, value, dir));
+        }
+
+        internal void RaiseFingerDown(long touchId, long fingerId, float x, float y, float dx, float dy, float pressure)
+        {
+            OnTouchFingerDown(new TouchFingerEventArgs(touchId, fingerId, x, y, dx, dy, pressure));
+        }
+        internal void RaiseFingerUp(long touchId, long fingerId, float x, float y, float dx, float dy, float pressure)
+        {
+            OnTouchFingerUp(new TouchFingerEventArgs(touchId, fingerId, x, y, dx, dy, pressure));
+        }
+        internal void RaiseFingerMotion(long touchId, long fingerId, float x, float y, float dx, float dy, float pressure)
+        {
+            OnTouchFingerMotion(new TouchFingerEventArgs(touchId, fingerId, x, y, dx, dy, pressure));
         }
 
         private UpdateEventArgs GetUpdateEventArgs(FrameTime time)

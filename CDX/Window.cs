@@ -421,6 +421,18 @@
 
         }
 
+        protected virtual void OnTouchFingerDown(TouchFingerEventArgs e)
+        {
+        }
+        protected virtual void OnTouchFingerUp(TouchFingerEventArgs e)
+        {
+        }
+
+        protected virtual void OnTouchFingerMotion(TouchFingerEventArgs e)
+        {
+        }
+
+
         private string GetEventLogMsg(EventArgs e, string? name = null)
         {
             StringBuilder sb = new StringBuilder();
@@ -476,7 +488,9 @@
             cdxWindow.ControllerButtonDown += CdxWindow_ControllerButtonDown;
             cdxWindow.ControllerButtonUp += CdxWindow_ControllerButtonUp;
             cdxWindow.ControllerAxis += CdxWindow_ControllerAxis;
-            //gui?.SetCDXWindow(cdxWindow);
+            cdxWindow.TouchFingerDown += CdxWindow_TouchFingerDown;
+            cdxWindow.TouchFingerUp += CdxWindow_TouchFingerUp;
+            cdxWindow.TouchFingerMotion += CdxWindow_TouchFingerMotion;
         }
 
 
@@ -510,7 +524,30 @@
             cdx.TextInput -= CdxWindow_TextInput;
             cdx.ControllerButtonDown -= CdxWindow_ControllerButtonDown;
             cdx.ControllerButtonUp -= CdxWindow_ControllerButtonUp;
-            cdxWindow.ControllerAxis -= CdxWindow_ControllerAxis;
+            cdx.ControllerAxis -= CdxWindow_ControllerAxis;
+            cdx.TouchFingerDown -= CdxWindow_TouchFingerDown;
+            cdx.TouchFingerUp -= CdxWindow_TouchFingerUp;
+            cdx.TouchFingerMotion -= CdxWindow_TouchFingerMotion;
+        }
+        private void CdxWindow_TouchFingerMotion(object sender, TouchFingerEventArgs e)
+        {
+            Logger.Verbose(GetEventLogMsg(e, "TouchFingerMotion"));
+            OnTouchFingerMotion(e);
+            gui.OnTouchFingerMotion(e);
+        }
+
+        private void CdxWindow_TouchFingerUp(object sender, TouchFingerEventArgs e)
+        {
+            Logger.Verbose(GetEventLogMsg(e, "TouchFingerUp"));
+            OnTouchFingerUp(e);
+            gui.OnTouchFingerUp(e);
+        }
+
+        private void CdxWindow_TouchFingerDown(object sender, TouchFingerEventArgs e)
+        {
+            Logger.Verbose(GetEventLogMsg(e, "TouchFingerDown"));
+            OnTouchFingerDown(e);
+            gui.OnTouchFingerDown(e);
         }
 
         private void CdxWindow_ControllerAxis(object sender, ControllerAxisEventArgs e)

@@ -430,6 +430,43 @@
 
         //private void OnGadgetDown(Event)
 
+        private void Touch2Screen(float x, float y, out int sx,out int sy)
+        {
+            sx = (int)(x * screenWidth);
+            sy = (int)(y * screenHeight);
+        }
+        public void OnTouchFingerDown(TouchFingerEventArgs e)
+        {
+            Touch2Screen(e.X, e.Y, out mouseX, out mouseY);
+            if (screen == null) return;
+            Window? win = screen.FindWindow(mouseX, mouseY);
+            screen.SetMouseWindow(win);
+            screen.SetActiveWindow(win);
+            Gadget? gad = win?.FindGadget(mouseX, mouseY);
+            screen.SetMouseGadget(gad);
+            screen.SetActiveGadget(gad);
+        }
+        public void OnTouchFingerUp(TouchFingerEventArgs e)
+        {
+            Touch2Screen(e.X, e.Y, out mouseX, out mouseY);
+            if (screen == null) return;
+            Window? win = screen.FindWindow(mouseX, mouseY);
+            screen.SetMouseWindow(win);
+            Gadget? gad = win?.FindGadget(mouseX, mouseY);
+            screen.SetMouseGadget(gad);
+
+        }
+
+        public void OnTouchFingerMotion(TouchFingerEventArgs e)
+        {
+            Touch2Screen(e.X, e.Y, out mouseX, out mouseY);
+            if (screen == null) return;
+            Window? win = screen.FindWindow(mouseX, mouseY);
+            screen.SetMouseWindow(win);
+            Gadget? gad = win?.FindGadget(mouseX, mouseY);
+            screen.SetMouseGadget(gad);
+        }
+
         public void OnMouseButtonDown(MouseButtonEventArgs e)
         {
             mouseX = e.X;

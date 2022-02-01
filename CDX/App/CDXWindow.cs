@@ -50,6 +50,10 @@
         private static readonly object controlerButtonDownEvenetKey = new();
         private static readonly object controlerAxisEvenetKey = new();
 
+        private static readonly object touchFingerUpEventKey = new();
+        private static readonly object touchFingerDownEventKey = new();
+        private static readonly object touchFingerMotionEventKey = new();
+
         protected CDXWindow()
         {
             graphics = NoGraphics.Instance;
@@ -234,6 +238,19 @@
             add => eventHandlerList.AddHandler(controlerAxisEvenetKey, value); remove => eventHandlerList.RemoveHandler(controlerAxisEvenetKey, value);
         }
 
+        public event TouchFingerEventHandler TouchFingerDown
+        {
+            add => eventHandlerList.AddHandler(touchFingerDownEventKey, value); remove => eventHandlerList.RemoveHandler(touchFingerDownEventKey, value);
+        }
+        public event TouchFingerEventHandler TouchFingerUp
+        {
+            add => eventHandlerList.AddHandler(touchFingerUpEventKey, value); remove => eventHandlerList.RemoveHandler(touchFingerUpEventKey, value);
+        }
+        public event TouchFingerEventHandler TouchFingerMotion
+        {
+            add => eventHandlerList.AddHandler(touchFingerMotionEventKey, value); remove => eventHandlerList.RemoveHandler(touchFingerMotionEventKey, value);
+        }
+
         protected virtual void OnWindowLoad(EventArgs e)
         {
             ((EventHandler?)eventHandlerList[windowLoadEventKey])?.Invoke(this, e);
@@ -362,6 +379,19 @@
         protected virtual void OnControllerAxis(ControllerAxisEventArgs e)
         {
             ((ControllerAxisEventHandler?)eventHandlerList[controlerAxisEvenetKey])?.Invoke(this, e);
+        }
+        protected virtual void OnTouchFingerDown(TouchFingerEventArgs e)
+        {
+            ((TouchFingerEventHandler?)eventHandlerList[touchFingerDownEventKey])?.Invoke(this, e);
+        }
+        protected virtual void OnTouchFingerUp(TouchFingerEventArgs e)
+        {
+            ((TouchFingerEventHandler?)eventHandlerList[touchFingerDownEventKey])?.Invoke(this, e);
+        }
+
+        protected virtual void OnTouchFingerMotion(TouchFingerEventArgs e)
+        {
+            ((TouchFingerEventHandler?)eventHandlerList[touchFingerMotionEventKey])?.Invoke(this, e);
         }
 
         public abstract void SetTitle(string title);

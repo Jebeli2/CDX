@@ -179,6 +179,15 @@
                     case SDL_EventType.CONTROLLERAXISMOTION:
                         HandleControllerAxisEvent(ref evt.caxis);
                         break;
+                    case SDL_EventType.FINGERDOWN:
+                        HandleFingerDownEvent(ref evt.tfinger);
+                        break;
+                    case SDL_EventType.FINGERUP:
+                        HandleFingerUpEvent(ref evt.tfinger);
+                        break;
+                    case SDL_EventType.FINGERMOTION:
+                        HandleFingerMotionEvent(ref evt.tfinger);
+                        break;
                 }
             }
         }
@@ -286,6 +295,30 @@
             }
         }
 
+        private void HandleFingerDownEvent(ref SDL_TouchFingerEvent evt)
+        {
+            SDLWindow? window = GetWindowFromID(evt.windowID);
+            if (window != null)
+            {
+                window.RaiseFingerDown(evt.touchId, evt.fingerId, evt.x, evt.y, evt.dx, evt.dy, evt.pressure);
+            }
+        }
+        private void HandleFingerUpEvent(ref SDL_TouchFingerEvent evt)
+        {
+            SDLWindow? window = GetWindowFromID(evt.windowID);
+            if (window != null)
+            {
+                window.RaiseFingerUp(evt.touchId, evt.fingerId, evt.x, evt.y, evt.dx, evt.dy, evt.pressure);
+            }
+        }
+        private void HandleFingerMotionEvent(ref SDL_TouchFingerEvent evt)
+        {
+            SDLWindow? window = GetWindowFromID(evt.windowID);
+            if (window != null)
+            {
+                window.RaiseFingerMotion(evt.touchId, evt.fingerId, evt.x, evt.y, evt.dx, evt.dy, evt.pressure);
+            }
+        }
         private void HandleControllerAxisEvent(ref SDL_ControllerAxisEvent evt)
         {
             SDLWindow? window = currentWindow;
@@ -327,7 +360,6 @@
             {
                 float f = (length - controllerDeadZone) / (controllerMaxValue - controllerDeadZone);
                 MathUtils.Clamp(f, 0.0f, 1.0f);
-                //dir *= f / length;
                 dir *= f;
                 dir = Vector2.Normalize(dir);
             }
@@ -833,6 +865,47 @@
             public float data3;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SDL_TouchFingerEvent
+        {
+            public SDL_EventType type;
+            public uint timestamp;
+            public long touchId;
+            public long fingerId;
+            public float x;
+            public float y;
+            public float dx;
+            public float dy;
+            public float pressure;
+            public uint windowID;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SDL_MultiGestureEvent
+        {
+            public SDL_EventType type;
+            public uint timestamp;
+            public long touchId;
+            public float dTheta;
+            public float dDist;
+            public float x;
+            public float y;
+            public ushort numFingers;
+            public ushort padding;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SDL_DollarGestureEvent
+        {
+            public SDL_EventType type;
+            public uint timestamp;
+            public long touchId;
+            public long gestureId;
+            public uint numFingers;
+            public float error;
+            public float x;
+            public float y;
+        }
 
         [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 64)]
         private struct SDL_Event
@@ -863,7 +936,12 @@
             public SDL_ControllerTouchpadEvent ctouchpad;
             [FieldOffset(0)]
             public SDL_ControllerSensorEvent csensor;
-
+            [FieldOffset(0)]
+            public SDL_TouchFingerEvent tfinger;
+            [FieldOffset(0)]
+            public SDL_MultiGestureEvent mgesture;
+            [FieldOffset(0)]
+            public SDL_DollarGestureEvent dgesture;
         }
 
         private enum SDL_GameControllerAxis

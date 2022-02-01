@@ -10,7 +10,7 @@
     using System.Threading.Tasks;
 
 
-    public interface IGUISystem : IMouseListener, IKeyboardListener
+    public interface IGUISystem : IMouseListener, IKeyboardListener, ITouchFingerListener
     {
         //void SetCDXWindow(CDXWindow cdx);
         void ScreenResized(int width, int height);

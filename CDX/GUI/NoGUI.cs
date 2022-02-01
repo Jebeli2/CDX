@@ -75,6 +75,19 @@
         {
 
         }
+        public void OnTouchFingerDown(TouchFingerEventArgs e)
+        {
+
+        }
+        public void OnTouchFingerUp(TouchFingerEventArgs e)
+        {
+
+        }
+
+        public void OnTouchFingerMotion(TouchFingerEventArgs e)
+        {
+
+        }
 
         public void OnMouseButtonDown(MouseButtonEventArgs e)
         {
