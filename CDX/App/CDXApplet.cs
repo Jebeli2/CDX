@@ -12,11 +12,18 @@
     public class CDXApplet : IMouseListener, IKeyboardListener, ITouchFingerListener, IControllerListener
     {
         private CDXWindow? cdx;
+        private string name;
         private int width;
         private int height;
         private bool enabled = true;
         private bool installed;
 
+        public CDXApplet(string name)
+        {
+            this.name = name;
+        }
+
+        public string Name => name;
         public int Width => width;
         public int Height => height;
 

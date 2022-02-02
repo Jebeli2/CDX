@@ -25,6 +25,12 @@
         private readonly Color leftColor2 = Color.Red;
         private readonly Color rightColor2 = Color.Orange;
 
+        public MusicPlayerApp()
+            : base("Music")
+        {
+
+        }
+
         public override void OnLoad(LoadEventArgs e)
         {
             bar = LoadImage("Bar");

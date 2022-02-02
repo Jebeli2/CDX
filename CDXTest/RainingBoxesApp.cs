@@ -37,6 +37,12 @@ namespace CDXTest
         private double time;
         private IImage? box;
 
+        public RainingBoxesApp()
+            : base("Boxes")
+        {
+
+        }
+
         public override void OnLoad(LoadEventArgs e)
         {
             box = LoadImage("box");

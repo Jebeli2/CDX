@@ -4,6 +4,7 @@
     using CDX.App;
     using CDX.Audio;
     using CDX.Logging;
+    using CDX.Utilities;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -104,14 +105,20 @@
             SDLMusic? music = null;
             if (UseTmpFilesForMusic)
             {
-                string path = Path.GetTempPath();
-                string fileName = Path.Combine(path, Path.GetFileName(name));
-                File.WriteAllBytes(fileName, data);
-                IntPtr handle = Mix_LoadMUS(fileName);
-                if (handle != IntPtr.Zero)
+                string fileName = FileUtils.GetTempFile(name);
+                try
                 {
-                    music = new SDLMusic(CDX.Content.ContentFlags.File, handle, name);
-                    Logger.Info($"Music loaded from resource '{name}' (via temporary file '{fileName}')");
+                    File.WriteAllBytes(fileName, data);
+                    IntPtr handle = Mix_LoadMUS(fileName);
+                    if (handle != IntPtr.Zero)
+                    {
+                        music = new SDLMusic(CDX.Content.ContentFlags.File, handle, name, fileName);
+                        Logger.Info($"Music loaded from resource '{name}' (via temporary file '{fileName}')");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Could not load Music from resource '{name}' (via temporary file '{fileName}'): {ex.Message}");
                 }
             }
             else

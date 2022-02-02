@@ -1,6 +1,7 @@
 ﻿namespace CDXTest
 {
     using CDX;
+    using CDX.App;
     using CDX.GUI;
     using CDX.Input;
     using CDX.Screens;
@@ -45,9 +46,9 @@
                     screen1 = gui.OpenScreen("Test Screen");
                     win1 = gui.OpenWindow(screen1, leftEdge: 200, topEdge: 200, width: 400, height: 400, title: "Test Window");
                     gad1 = gui.AddGadget(win1, leftEdge: 10, topEdge: 10, width: -20, height: 40, text: "Other", clickAction: OtherClick);
-                    gad2 = gui.AddGadget(win1, leftEdge: 10, topEdge: 60, width: -20, height: 40, text: "Add Boxes", clickAction: BoxesClick);
-                    gad3 = gui.AddGadget(win1, leftEdge: 10, topEdge: 110, width: -20, height: 40, text: "Add Music", clickAction: MusicClick);
-                    gad4 = gui.AddGadget(win1, leftEdge: 10, topEdge: 160, width: -20, height: 40, text: "Add Lines", clickAction: LinesClick);
+                    gad2 = gui.AddGadget(win1, leftEdge: 10, topEdge: 60, width: -20, height: 40, text: "Add Boxes", clickAction: () => { AddRemApp(rainingBoxes, gad2); });
+                    gad3 = gui.AddGadget(win1, leftEdge: 10, topEdge: 110, width: -20, height: 40, text: "Add Music", clickAction: () => { AddRemApp(musicPlayer, gad3); });
+                    gad4 = gui.AddGadget(win1, leftEdge: 10, topEdge: 160, width: -20, height: 40, text: "Add Lines", clickAction: () => { AddRemApp(linesApp, gad4); });
                     return screen1;
                 }
             };
@@ -65,57 +66,31 @@
         }
 
         protected override void OnShown(EventArgs e)
-        {            
+        {
             Screen = titleScreen;
             ActivateGaget(gad1);
             UseExtremeFullScreen = false;
         }
 
+        private void AddRemApp(CDXApplet app, IGadget? gadget)
+        {
+            string text = "";
+            if (app.Installed)
+            {
+                RemoveApplet(app);
+                text = "Add " + app.Name;
+            }
+            else
+            {
+                AddApplet(app);
+                text = "Remove " + app.Name;
+            }
+            if (gadget != null) { gadget.Text = text; }
+        }
+
         private void OtherClick()
         {
             Screen = demoScreen;
-        }
-
-        private void BoxesClick()
-        {
-            if (rainingBoxes.Installed)
-            {
-                RemoveApplet(rainingBoxes);
-                gad2.Text = "Add Boxes";
-            }
-            else
-            {
-                AddApplet(rainingBoxes);
-                gad2.Text = "Rem Boxes";
-            }
-        }
-
-        private void MusicClick()
-        {
-            if (musicPlayer.Installed)
-            {
-                RemoveApplet(musicPlayer);
-                gad3.Text = "Add Music";
-            }
-            else
-            {
-                AddApplet(musicPlayer);
-                gad3.Text = "Rem Music";
-            }
-        }
-
-        private void LinesClick()
-        {
-            if (linesApp.Installed)
-            {
-                RemoveApplet(linesApp);
-                gad4.Text = "Add Lines";
-            }
-            else
-            {
-                AddApplet(linesApp);
-                gad4.Text = "Rem Lines";
-            }
         }
 
         private void BackClick()

@@ -38,6 +38,12 @@ namespace CDXTest
         private int delay;
         private int delayFrames = 2;
 
+        public LinesApp()
+            : base("Lines")
+        {
+
+        }
+
         public override void OnLoad(LoadEventArgs e)
         {
             Audio.AddToPlayList("bach", -1);
