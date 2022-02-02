@@ -39,9 +39,7 @@
                 barF.AlphaMod = 128;
                 barF.TextureFilter = TextureFilter.Linear;
             }
-            Audio.AddToPlayList("Song 2");
-            Audio.AddToPlayList("Deadcrush");
-            Audio.AddToPlayList("Pleader");
+            Audio.AddToPlayList("bach");
             Audio.AddToPlayList("battle_theme");
             Audio.AddToPlayList("boss_theme");
             Audio.AddToPlayList("cave_theme");

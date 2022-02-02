@@ -145,9 +145,6 @@
   <data name="cave_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cave_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Deadcrush" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\05 Deadcrush.mp3;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="dungeon_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dungeon_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -175,14 +172,8 @@
   <data name="overworld_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\overworld_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Pleader" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\08 Pleader.mp3;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="safe_room_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\safe_room_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Song 2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\02 Song 2.mp3;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Tetris Theme Variations on Piano" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Tetris Theme Variations on Piano.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

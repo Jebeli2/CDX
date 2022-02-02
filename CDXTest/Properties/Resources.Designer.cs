@@ -153,16 +153,6 @@ namespace CDXTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Deadcrush {
-            get {
-                object obj = ResourceManager.GetObject("Deadcrush", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] dungeon_theme {
             get {
                 object obj = ResourceManager.GetObject("dungeon_theme", resourceCulture);
@@ -253,29 +243,9 @@ namespace CDXTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Pleader {
-            get {
-                object obj = ResourceManager.GetObject("Pleader", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] safe_room_theme {
             get {
                 object obj = ResourceManager.GetObject("safe_room_theme", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Song_2 {
-            get {
-                object obj = ResourceManager.GetObject("Song 2", resourceCulture);
                 return ((byte[])(obj));
             }
         }

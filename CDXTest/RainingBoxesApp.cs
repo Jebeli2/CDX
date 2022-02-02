@@ -1,4 +1,9 @@
-﻿namespace CDXTest
+﻿/*
+ Inspired by Lesson 08 of Maxwell Slaters cpp course: "Timing: Frame Rate, Physics, Animation"
+ https://thenumbat.github.io/cpp-course/sdl2/08/08.html
+
+ */
+namespace CDXTest
 {
     using CDX;
     using CDX.App;

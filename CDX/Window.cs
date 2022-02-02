@@ -155,6 +155,15 @@
             }
         }
 
+        public bool UseExtremeFullScreen
+        {
+            get => cdxWindow.UseExtremeFullScreen;
+            set
+            {
+                cdxWindow.UseExtremeFullScreen = value;
+            }
+        }
+
         public bool ShowFPS
         {
             get => showFPS;
@@ -476,7 +485,7 @@
 
         private void ForEachEnabledApplet(Action<CDXApplet> action)
         {
-            foreach(CDXApplet applet in applets)
+            foreach (CDXApplet applet in applets)
             {
                 if (applet.Enabled)
                 {

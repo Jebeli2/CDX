@@ -65,10 +65,10 @@
         }
 
         protected override void OnShown(EventArgs e)
-        {
+        {            
             Screen = titleScreen;
             ActivateGaget(gad1);
-
+            UseExtremeFullScreen = false;
         }
 
         private void OtherClick()

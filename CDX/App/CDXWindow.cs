@@ -54,6 +54,7 @@
         private static readonly object touchFingerDownEventKey = new();
         private static readonly object touchFingerMotionEventKey = new();
 
+        private bool useExtremeFullScreen;
         protected CDXWindow(Window window)
         {
             graphics = NoGraphics.Instance;
@@ -85,6 +86,15 @@
         {
             get => fpsPosY;
             set => fpsPosY = value;
+        }
+
+        public bool UseExtremeFullScreen
+        {
+            get => useExtremeFullScreen;
+            set
+            {
+                useExtremeFullScreen = value;
+            }
         }
         public abstract uint WindowID { get; }
         public abstract IAudio Audio { get; }

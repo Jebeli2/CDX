@@ -158,6 +158,44 @@
 
         private void GoFullScreen()
         {
+            if (UseExtremeFullScreen)
+            {
+                GoExtremeFullScreen();
+            }
+            else
+            {
+                GoNormalFullScreen();
+            }
+        }
+        private void GoExtremeFullScreen()
+        {
+            SDL_GetWindowPosition(handle, out oldX, out oldY);
+            SDL_GetWindowSize(handle, out oldWidth, out oldHeight);
+            SDL_GetDisplayBounds(0, out Rectangle bounds);
+            int numDisplays = SDL_GetNumVideoDisplays();
+            for (int index = 1; index < numDisplays; index++)
+            {
+                _ = SDL_GetDisplayBounds(index, out Rectangle otherBounds);
+                if (otherBounds.Height == bounds.Height)
+                {
+                    bounds = Rectangle.Union(bounds, otherBounds);
+
+                }
+                else
+                {
+                    break;
+                }
+            }
+            SDL_SetWindowBordered(handle, false);
+            SDL_SetWindowResizable(handle, false);
+            SDL_SetWindowTitle(handle, IntPtr.Zero);
+            SDL_SetWindowAlwaysOnTop(handle, true);
+            SDL_SetWindowSize(handle, bounds.Width, bounds.Height);
+            SDL_SetWindowPosition(handle, bounds.X, bounds.Y);
+        }
+
+        private void GoNormalFullScreen()
+        {
             SDL_GetWindowPosition(handle, out oldX, out oldY);
             SDL_GetWindowSize(handle, out oldWidth, out oldHeight);
             int index = SDL_GetWindowDisplayIndex(handle);
@@ -478,6 +516,7 @@
         private static extern int SDL_GetDisplayBounds(int displayIndex, out Rectangle rect);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void SDL_WarpMouseInWindow(IntPtr window, int x, int y);
-
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int SDL_GetNumVideoDisplays();
     }
 }

@@ -1,4 +1,9 @@
-﻿namespace CDXTest
+﻿/*
+ Inspired by sdl-bach-demo from lcabrini
+ https://github.com/lcabrini/sdl-bach-demo
+ 
+ */
+namespace CDXTest
 {
     using CDX;
     using CDX.App;
