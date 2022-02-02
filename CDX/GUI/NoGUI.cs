@@ -56,6 +56,10 @@
         {
 
         }
+        public void ActivateGadget(IGadget? gadget)
+        {
+
+        }
         public IGadget? AddGadget(IWindow? window,
             int leftEdge = 0,
             int topEdge = 0,
@@ -85,6 +89,16 @@
         }
 
         public void OnTouchFingerMotion(TouchFingerEventArgs e)
+        {
+
+        }
+        public void OnControllerButtonDown(ControllerButtonEventArgs e)
+        {
+        }
+        public void OnControllerButtonUp(ControllerButtonEventArgs e)
+        {
+        }
+        public void OnControllerAxis(ControllerAxisEventArgs e)
         {
 
         }

@@ -18,7 +18,7 @@
         private int mouseX;
         private int mouseY;
         //private bool changeingMousePosition;
-        //private bool selectMouseDown;
+        private bool selectMouseDown;
         //private Window? mouseWindow;
         //private Gadget? mouseGadget;
         //private Window? activeWindow;
@@ -236,6 +236,14 @@
             }
         }
 
+        public void ActivateGadget(IGadget? gadget)
+        {
+            if (gadget is Gadget gad)
+            {
+                gad.Window.Screen.ActivateGadget(gad);
+            }
+        }
+
         public IGadget? AddGadget(IWindow? window,
             int leftEdge = 0,
             int topEdge = 0,
@@ -331,51 +339,55 @@
         //}
 
 
-        //private bool CheckWindowDrag(MouseMotionEventArgs e)
-        //{
-        //    if (selectMouseDown &&
-        //        activeGadget != null &&
-        //        activeGadget.GadgetID == SYSGAD_DRAG &&
-        //        activeWindow != null &&
-        //        activeGadget.Parent == activeWindow)
-        //    {
-        //        activeWindow.MoveWindow(e.RelX, e.RelY);
-        //        if (activeWindow.AdjustMovingWindowBounds(out bool preventX, out bool preventY))
-        //        {
-        //            int x = e.X;
-        //            int y = e.Y;
-        //            if (preventX) { x -= e.RelX; }
-        //            if (preventY) { y -= e.RelY; }
-        //            Logger.Verbose($"Preventing Mouse Move: {x}x{y}");
-        //            SetMousePosition(x, y);
-        //        }
-        //        return true;
-        //    }
-        //    return false;
-        //}
+        private bool CheckWindowDragging(MouseMotionEventArgs e)
+        {
+            if (screen != null &&
+                selectMouseDown &&
+                screen.ActiveGadget != null &&
+                screen.ActiveGadget.GadgetID == SYSGAD_DRAG &&
+                screen.ActiveWindow != null &&
+                screen.ActiveGadget.Window == screen.ActiveWindow)
+            {
+                screen.ActiveWindow.MoveWindow(e.RelX, e.RelY);
 
-        //private bool CheckWindowSizing(MouseMotionEventArgs e)
-        //{
-        //    if (selectMouseDown &&
-        //        activeGadget != null &&
-        //        activeGadget.GadgetID == SYSGAD_SIZE &&
-        //        activeWindow != null &&
-        //        activeGadget.Parent == activeWindow)
-        //    {
-        //        activeWindow.SizeWindow(e.RelX, e.RelY);
-        //        if (activeWindow.AdjustSizingWindowBounds(out bool preventX, out bool preventY))
-        //        {
-        //            int x = e.X;
-        //            int y = e.Y;
-        //            if (preventX) { x -= e.RelX; }
-        //            if (preventY) { y -= e.RelY; }
-        //            Logger.Verbose($"Preventing Mouse Move: {x}x{y}");
-        //            SetMousePosition(x, y);
-        //        }
-        //        return true;
-        //    }
-        //    return false;
-        //}
+                //        activeWindow.MoveWindow(e.RelX, e.RelY);
+                //        if (activeWindow.AdjustMovingWindowBounds(out bool preventX, out bool preventY))
+                //        {
+                //            int x = e.X;
+                //            int y = e.Y;
+                //            if (preventX) { x -= e.RelX; }
+                //            if (preventY) { y -= e.RelY; }
+                //            Logger.Verbose($"Preventing Mouse Move: {x}x{y}");
+                //            SetMousePosition(x, y);
+                //}
+                //return true;
+            }
+            return false;
+        }
+
+        private bool CheckWindowSizing(MouseMotionEventArgs e)
+        {
+            if (screen != null &&
+                selectMouseDown &&
+                screen.ActiveGadget != null &&
+                screen.ActiveGadget.GadgetID == SYSGAD_SIZE &&
+                screen.ActiveWindow != null &&
+                screen.ActiveGadget.Window == screen.ActiveWindow)
+            {
+                screen.ActiveWindow.SizeWindow(e.RelX, e.RelY);
+                //        if (activeWindow.AdjustSizingWindowBounds(out bool preventX, out bool preventY))
+                //        {
+                //            int x = e.X;
+                //            int y = e.Y;
+                //            if (preventX) { x -= e.RelX; }
+                //            if (preventY) { y -= e.RelY; }
+                //            Logger.Verbose($"Preventing Mouse Move: {x}x{y}");
+                //            SetMousePosition(x, y);
+                //        }
+                return true;
+            }
+            return false;
+        }
 
         //private void SetMousePosition(int x, int y)
         //{
@@ -430,11 +442,23 @@
 
         //private void OnGadgetDown(Event)
 
-        private void Touch2Screen(float x, float y, out int sx,out int sy)
+        private void Touch2Screen(float x, float y, out int sx, out int sy)
         {
             sx = (int)(x * screenWidth);
             sy = (int)(y * screenHeight);
         }
+
+        public void OnControllerButtonDown(ControllerButtonEventArgs e)
+        {
+        }
+        public void OnControllerButtonUp(ControllerButtonEventArgs e)
+        {
+        }
+        public void OnControllerAxis(ControllerAxisEventArgs e)
+        {
+
+        }
+
         public void OnTouchFingerDown(TouchFingerEventArgs e)
         {
             Touch2Screen(e.X, e.Y, out mouseX, out mouseY);
@@ -471,6 +495,7 @@
         {
             mouseX = e.X;
             mouseY = e.Y;
+            if (e.Button == MouseButton.Left) { selectMouseDown = true; }
             if (screen == null) return;
             Window? win = screen.FindWindow(mouseX, mouseY);
             screen.SetMouseWindow(win);
@@ -478,7 +503,6 @@
             Gadget? gad = win?.FindGadget(mouseX, mouseY);
             screen.SetMouseGadget(gad);
             screen.SetActiveGadget(gad);
-            //if (e.Button == MouseButton.Left) { selectMouseDown = true; }
             //Window? window = FindWindow(mouseX, mouseY);
             //SetMouseWindow(window);
             //Gadget? gadget = window?.FindGadget(mouseX, mouseY);
@@ -495,13 +519,12 @@
         {
             mouseX = e.X;
             mouseY = e.Y;
+            if (e.Button == MouseButton.Left) { selectMouseDown = false; }
             if (screen == null) return;
             Window? win = screen.FindWindow(mouseX, mouseY);
             screen.SetMouseWindow(win);
             Gadget? gad = win?.FindGadget(mouseX, mouseY);
             screen.SetMouseGadget(gad);
-
-            //if (e.Button == MouseButton.Left) { selectMouseDown = false; }
             //Window? window = FindWindow(mouseX, mouseY);
             //SetMouseWindow(window);
             //Gadget? gadget = window?.FindGadget(mouseX, mouseY);
@@ -521,6 +544,8 @@
             screen.SetMouseWindow(win);
             Gadget? gad = win?.FindGadget(mouseX, mouseY);
             screen.SetMouseGadget(gad);
+            if (CheckWindowDragging(e)) return;
+            if (CheckWindowSizing(e)) return;
 
             //if (changeingMousePosition)
             //{

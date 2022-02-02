@@ -10,9 +10,8 @@
     using System.Threading.Tasks;
 
 
-    public interface IGUISystem : IMouseListener, IKeyboardListener, ITouchFingerListener
+    public interface IGUISystem : IMouseListener, IKeyboardListener, ITouchFingerListener, IControllerListener
     {
-        //void SetCDXWindow(CDXWindow cdx);
         void ScreenResized(int width, int height);
         void Clear();
         void SetScreen(GUI.IScreen? screen);
@@ -24,14 +23,14 @@
         IWindow? OpenWindow(GUI.IScreen? screen, int leftEdge = 0, int topEdge = 0, int width = 256, int height = 256, string title = "");
         void CloseWindow(IWindow? window);
         void ActivateWindow(IWindow? window);
-
-        IGadget? AddGadget(IWindow? window, 
-            int leftEdge = 0, 
-            int topEdge = 0, 
-            int width = 100, 
+        void ActivateGadget(IGadget? gadget);
+        IGadget? AddGadget(IWindow? window,
+            int leftEdge = 0,
+            int topEdge = 0,
+            int width = 100,
             int height = 100,
             GadgetFlags flags = GadgetFlags.None,
-            GadgetActivation activation = GadgetActivation.Immediate| GadgetActivation.RelVerify,
+            GadgetActivation activation = GadgetActivation.Immediate | GadgetActivation.RelVerify,
             string? text = null,
             bool disabled = false,
             Action? clickAction = null,

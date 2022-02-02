@@ -557,18 +557,21 @@
                 Logger.Verbose(GetEventLogMsg(e, "ControllerAxis"));
             }
             OnControllerAxis(e);
+            gui.OnControllerAxis(e);
         }
 
         private void CdxWindow_ControllerButtonUp(object sender, ControllerButtonEventArgs e)
         {
             Logger.Verbose(GetEventLogMsg(e, "ControllerButtonUp"));
             OnControllerButtonUp(e);
+            gui.OnControllerButtonUp(e);
         }
 
         private void CdxWindow_ControllerButtonDown(object sender, ControllerButtonEventArgs e)
         {
             Logger.Verbose(GetEventLogMsg(e, "ControllerButtonDown"));
             OnControllerButtonDown(e);
+            gui.OnControllerButtonDown(e);
         }
 
         private void CdxWindow_TextInput(object sender, TextInputEventArgs e)

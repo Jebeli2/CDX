@@ -2,6 +2,7 @@
 {
     using CDX;
     using CDX.GUI;
+    using CDX.Input;
     using CDX.Screens;
     using System;
     using System.Collections.Generic;
@@ -24,6 +25,8 @@
 
         private IWindow? win2;
         private IGadget? gad4;
+
+        private IGadget? cGadget;
         public TestScreenWindow()
             : base("Test Screen")
         {
@@ -58,6 +61,8 @@
         protected override void OnShown(EventArgs e)
         {
             Screen = titleScreen;
+            ActivateGaget(gad1);
+
         }
 
         private void ContinueClick()
@@ -78,6 +83,61 @@
         private void BackClick()
         {
             Screen = titleScreen;
+            ActivateGaget(gad1);
+        }
+
+        private void ActivateNextGaget()
+        {
+            if (cGadget == gad1)
+            {
+                ActivateGaget(gad2);
+            }
+            else if (cGadget == gad2)
+            {
+                ActivateGaget(gad3);
+            }
+        }
+
+        private void ActivatePrevGadget()
+        {
+            if (cGadget == gad3)
+            {
+                ActivateGaget(gad2);
+            }
+            else if (cGadget == gad2)
+            {
+                ActivateGaget(gad1);
+            }
+        }
+
+        private void ActivateGaget(IGadget? gadget)
+        {
+            cGadget = gadget;
+            gui.ActivateGadget(cGadget);
+        }
+
+        protected override void OnControllerButtonUp(ControllerButtonEventArgs e)
+        {
+            if (e.Button == ControllerButton.Down)
+            {
+                ActivateNextGaget();
+            }
+            else if (e.Button == ControllerButton.Up)
+            {
+                ActivatePrevGadget();
+            }
+        }
+
+        protected override void OnControllerAxis(ControllerAxisEventArgs e)
+        {
+            if (e.Direction.Y > 0.5)
+            {
+                ActivatePrevGadget();
+            }
+            else if (e.Direction.Y < -0.5)
+            {
+                ActivateNextGaget();
+            }
         }
     }
 }

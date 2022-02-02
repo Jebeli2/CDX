@@ -176,7 +176,7 @@
             }
         }
 
-        private void InvalidateBounds()
+        internal void InvalidateBounds()
         {
             bounds = null;
         }

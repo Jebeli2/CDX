@@ -13,6 +13,7 @@
     {
         private readonly List<Window> windows = new();
         private readonly Queue<Window> activationWindows = new();
+        private readonly Queue<Gadget> activationGadgets = new();
         private Window? activeWindow;
         private Window? mouseWindow;
         private Gadget? activeGadget;
@@ -22,6 +23,8 @@
         {
         }
 
+        public Window? ActiveWindow => activeWindow;
+        public Gadget? ActiveGadget => activeGadget;    
         public string? Title { get => Text; set => Text = value; }
 
         public override void SetDimensions(int x, int y, int w, int h)
@@ -35,7 +38,8 @@
 
         public override void Update(FrameTime time)
         {
-            CheckActivationQueue();
+            CheckWindowActivationQueue();
+            CheckGadgetActivationQueue();
             foreach (Window win in windows)
             {
                 win.Update(time);
@@ -60,6 +64,11 @@
             activationWindows.Enqueue(win);
         }
 
+        public void ActivateGadget(Gadget gad)
+        {
+            activationGadgets.Enqueue(gad);
+        }
+
 
         public Window? FindWindow(int x, int y)
         {
@@ -74,12 +83,24 @@
             return null;
         }
 
-        private void CheckActivationQueue()
+        private void CheckWindowActivationQueue()
         {
             if (activationWindows.Count > 0)
             {
                 Window win = activationWindows.Dequeue();
                 SetActiveWindow(win);
+            }
+        }
+
+        private void CheckGadgetActivationQueue()
+        {
+            if (activationGadgets.Count > 0)
+            {
+                Gadget gad = activationGadgets.Peek();
+                if (gad.Window == activeWindow)
+                {
+                    SetActiveGadget(activationGadgets.Dequeue());
+                }
             }
         }
 

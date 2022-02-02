@@ -203,20 +203,32 @@
         //    }
         //    return false;
         //}
+        private void InvalidateBounds()
+        {
+            foreach (Gadget gadget in gadgets)
+            {
+                gadget.InvalidateBounds();
+            }
+        }
+        internal void MoveWindow(int dx, int dy)
+        {
+            if (dx != 0 || dy != 0)
+            {
+                SetDimensions(LeftEdge + dx, TopEdge + dy, Width, Height);
+            }
+        }
+        internal void SizeWindow(int dx, int dy)
+        {
+            if (dx != 0 || dy != 0)
+            {
+                SetDimensions(LeftEdge, TopEdge, Width + dx, Height + dy);
+            }
+        }
 
-        //internal void MoveWindow(int dx, int dy)
-        //{
-        //    if (dx != 0 || dy != 0)
-        //    {
-        //        SetPosition(LeftEdge + dx, TopEdge + dy);
-        //    }
-        //}
-        //internal void SizeWindow(int dx, int dy)
-        //{
-        //    if (dx != 0 || dy != 0)
-        //    {
-        //        SetSize(Width + dx, Height + dy);
-        //    }
-        //}
+        public override void SetDimensions(int x, int y, int w, int h)
+        {
+            base.SetDimensions(x, y, w, h);
+            InvalidateBounds();
+        }
     }
 }
