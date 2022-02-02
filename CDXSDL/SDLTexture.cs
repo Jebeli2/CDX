@@ -21,17 +21,20 @@
         private TextureFilter textureFilter;
         private byte alphaMod;
         private Color colorMod;
+        private BlendMode blendMode;
 
         internal SDLTexture(ContentFlags flags, SDLRenderer renderer, IntPtr handle, string name)
             : base(name, flags | ContentFlags.Image)
         {
             this.renderer = renderer;
             this.handle = handle;
+            blendMode = BlendMode.Blend;
             _ = SDLRenderer.SDL_QueryTexture(this.handle, out format, out access, out width, out height);
             _ = SDLRenderer.SDL_GetTextureScaleMode(this.handle, out textureFilter);
             _ = SDLRenderer.SDL_GetTextureAlphaMod(this.handle, out alphaMod);
             _ = SDLRenderer.SDL_GetTextureColorMod(this.handle, out byte r, out byte g, out byte b);
             colorMod = Color.FromArgb(r, g, b);
+            _ = SDLRenderer.SDL_SetTextureBlendMode(this.handle, (SDLRenderer.SDL_BlendMode)blendMode);
         }
 
         public IntPtr Handle => handle;
@@ -62,14 +65,6 @@
                 {
                     alphaMod = value;
                     _ = SDLRenderer.SDL_SetTextureAlphaMod(handle, alphaMod);
-                    if (alphaMod == 255)
-                    {
-                        SDLRenderer.SDL_SetTextureBlendMode(handle, SDLRenderer.SDL_BlendMode.NONE);
-                    }
-                    else
-                    {
-                        SDLRenderer.SDL_SetTextureBlendMode(handle, SDLRenderer.SDL_BlendMode.BLEND);
-                    }
                 }
             }
         }
@@ -83,6 +78,19 @@
                 {
                     colorMod = value;
                     _ = SDLRenderer.SDL_SetTextureColorMod(handle, colorMod.R, colorMod.G, colorMod.B);
+                }
+            }
+        }
+
+        public BlendMode BlendMode
+        {
+            get => blendMode;
+            set
+            {
+                if (blendMode != value)
+                {
+                    blendMode = value;
+                    _ = SDLRenderer.SDL_SetTextureBlendMode(handle, (SDLRenderer.SDL_BlendMode)blendMode);
                 }
             }
         }

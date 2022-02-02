@@ -71,7 +71,7 @@
             isVisible = true;
             updateCount = 0;
             Logger.Info($"Show {name} ({width}x{height})");
-            LoadBgImage();            
+            LoadBgImage();
             if (!firstShow) { FirstShow(); }
             window.GUI.ScreenResized(width, height);
             window.GUI.SetScreen(guiScreen);
@@ -124,12 +124,16 @@
         {
             if (!string.IsNullOrEmpty(bgImageName))
             {
-                bgImage = window.LoadImage(bgImageName);
+                if (bgImage == null || bgImage.Name != bgImageName)
+                {
+                    bgImage = window.LoadImage(bgImageName);
+                }
             }
         }
 
         private void ClearBgImage()
         {
+            bgImage?.Dispose();
             bgImage = null;
             bgImageName = string.Empty;
         }

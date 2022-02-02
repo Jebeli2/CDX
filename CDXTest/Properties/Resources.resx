@@ -121,6 +121,9 @@
   <data name="arrival" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrival.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="bach" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\jesu-joy-of-mans-desiring.mp3;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="badlands" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\badlands.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

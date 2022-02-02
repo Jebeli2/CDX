@@ -37,15 +37,8 @@
         protected IScreen screen;
         protected IGUISystem gui;
         private int axisThreshold = 8000;
+        private List<CDXApplet> applets = new();
 
-        internal Window(CDXWindow cdx)
-        {
-            this.title = "";
-            screen = new NoScreen();
-            hotKeyManager = new();
-            cdxWindow = cdx;
-            gui = new NoGUI();
-        }
         public Window(string title)
         {
             this.title = title;
@@ -83,7 +76,7 @@
                 }
             }
         }
-        public uint WindowID => cdxWindow?.WindowID ?? 0;
+        public uint WindowID => cdxWindow.WindowID;
         public string Title
         {
             get => title;
@@ -304,6 +297,7 @@
         {
             UnlinkWindow(cdxWindow);
             cdxWindow.Close();
+            gui.Shutdown();
         }
         public void ToggleFullScreen()
         {
@@ -339,6 +333,33 @@
             return cdxWindow.Audio.LoadMusic(data, name);
         }
 
+        public void AddApplet(CDXApplet applet)
+        {
+            if (!applets.Contains(applet))
+            {
+                InitApplet(applet);
+                applets.Add(applet);
+                applet.Installed = true;
+            }
+        }
+
+        private void InitApplet(CDXApplet applet)
+        {
+            if (!applet.Initialized)
+            {
+                applet.InternalOnLoad(new LoadEventArgs(Graphics, cdxWindow));
+                applet.InternalOnSizeChanged(Width, Height);
+                applet.Initialized = true;
+                applet.InternalOnShown(EventArgs.Empty);
+            }
+        }
+
+        public void RemoveApplet(CDXApplet applet)
+        {
+            applets.Remove(applet);
+            applet.Installed = false;
+        }
+
         public void InstallDefaultHotKeys()
         {
             hotKeyManager.AddHotKey(ScanCode.SCANCODE_RETURN, KeyMod.LALT, ToggleFullScreen);
@@ -355,7 +376,7 @@
 
         }
 
-        protected virtual void OnLoad(EventArgs e)
+        protected virtual void OnLoad(LoadEventArgs e)
         {
 
         }
@@ -453,6 +474,17 @@
             return sb.ToString();
         }
 
+        private void ForEachEnabledApplet(Action<CDXApplet> action)
+        {
+            foreach(CDXApplet applet in applets)
+            {
+                if (applet.Enabled)
+                {
+                    action(applet);
+                }
+            }
+        }
+
         internal void LinkWindow(CDXWindow cdx)
         {
             cdxWindow = cdx;
@@ -534,6 +566,7 @@
             Logger.Verbose(GetEventLogMsg(e, "TouchFingerMotion"));
             OnTouchFingerMotion(e);
             gui.OnTouchFingerMotion(e);
+            ForEachEnabledApplet(a => a.OnTouchFingerMotion(e));
         }
 
         private void CdxWindow_TouchFingerUp(object sender, TouchFingerEventArgs e)
@@ -541,6 +574,7 @@
             Logger.Verbose(GetEventLogMsg(e, "TouchFingerUp"));
             OnTouchFingerUp(e);
             gui.OnTouchFingerUp(e);
+            ForEachEnabledApplet(a => a.OnTouchFingerUp(e));
         }
 
         private void CdxWindow_TouchFingerDown(object sender, TouchFingerEventArgs e)
@@ -548,6 +582,7 @@
             Logger.Verbose(GetEventLogMsg(e, "TouchFingerDown"));
             OnTouchFingerDown(e);
             gui.OnTouchFingerDown(e);
+            ForEachEnabledApplet(a => a.OnTouchFingerDown(e));
         }
 
         private void CdxWindow_ControllerAxis(object sender, ControllerAxisEventArgs e)
@@ -558,6 +593,7 @@
             }
             OnControllerAxis(e);
             gui.OnControllerAxis(e);
+            ForEachEnabledApplet(a => a.OnControllerAxis(e));
         }
 
         private void CdxWindow_ControllerButtonUp(object sender, ControllerButtonEventArgs e)
@@ -565,6 +601,7 @@
             Logger.Verbose(GetEventLogMsg(e, "ControllerButtonUp"));
             OnControllerButtonUp(e);
             gui.OnControllerButtonUp(e);
+            ForEachEnabledApplet(a => a.OnControllerButtonUp(e));
         }
 
         private void CdxWindow_ControllerButtonDown(object sender, ControllerButtonEventArgs e)
@@ -572,6 +609,7 @@
             Logger.Verbose(GetEventLogMsg(e, "ControllerButtonDown"));
             OnControllerButtonDown(e);
             gui.OnControllerButtonDown(e);
+            ForEachEnabledApplet(a => a.OnControllerButtonDown(e));
         }
 
         private void CdxWindow_TextInput(object sender, TextInputEventArgs e)
@@ -580,6 +618,7 @@
             OnTextInput(e);
             screen.OnTextInput(e);
             gui.OnTextInput(e);
+            ForEachEnabledApplet(a => a.OnTextInput(e));
         }
 
         private void CdxWindow_KeyUp(object sender, KeyEventArgs e)
@@ -592,6 +631,7 @@
             OnKeyUp(e);
             screen.OnKeyUp(e);
             gui.OnKeyUp(e);
+            ForEachEnabledApplet(a => a.OnKeyUp(e));
         }
 
         private void CdxWindow_KeyDown(object sender, KeyEventArgs e)
@@ -600,6 +640,7 @@
             OnKeyDown(e);
             screen.OnKeyDown(e);
             gui.OnKeyDown(e);
+            ForEachEnabledApplet(a => a.OnKeyDown(e));
         }
 
         private void CdxWindow_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -608,6 +649,7 @@
             OnMouseWheel(e);
             screen.OnMouseWheel(e);
             gui.OnMouseWheel(e);
+            ForEachEnabledApplet(a => a.OnMouseWheel(e));
         }
 
         private void CdxWindow_MouseMove(object sender, MouseMotionEventArgs e)
@@ -616,6 +658,7 @@
             OnMouseMoved(e);
             screen.OnMouseMoved(e);
             gui.OnMouseMoved(e);
+            ForEachEnabledApplet(a => a.OnMouseMoved(e));
         }
 
         private void CdxWindow_MouseButtonUp(object sender, MouseButtonEventArgs e)
@@ -624,6 +667,7 @@
             OnMouseButtonUp(e);
             screen.OnMouseButtonUp(e);
             gui.OnMouseButtonUp(e);
+            ForEachEnabledApplet(a => a.OnMouseButtonUp(e));
         }
 
         private void CdxWindow_MouseButtonDown(object sender, MouseButtonEventArgs e)
@@ -632,6 +676,7 @@
             OnMouseButtonDown(e);
             screen.OnMouseButtonDown(e);
             gui.OnMouseButtonDown(e);
+            ForEachEnabledApplet(a => a.OnMouseButtonDown(e));
         }
 
 
@@ -641,6 +686,7 @@
             OnPaint(e);
             screen.Render(frameTime);
             gui.Render(e.Graphics, frameTime);
+            ForEachEnabledApplet(a => a.OnPaint(e));
         }
         private void CdxWindow_WindowUpdate(object sender, UpdateEventArgs e)
         {
@@ -648,6 +694,7 @@
             OnUpdate(e);
             screen.Update(frameTime);
             gui.Update(frameTime);
+            ForEachEnabledApplet(a => a.OnUpdate(e));
         }
 
 
@@ -655,16 +702,30 @@
         {
             Logger.Verbose(GetEventLogMsg(e, "Shown"));
             OnShown(e);
-            //screen.Show();
+            ForEachEnabledApplet(a => a.InternalOnShown(e));
         }
 
         private void CdxWindow_WindowResized(object? sender, WindowSizeEventArgs e)
         {
-            width = e.Width;
-            height = e.Height;
             Logger.Verbose(GetEventLogMsg(e, "Resized"));
-            screen.Resized(width, height);
-            gui.ScreenResized(width, Height);
+            NotifyScreenSizeChange(e);
+        }
+        private void CdxWindow_WindowSizeChanged(object? sender, WindowSizeEventArgs e)
+        {
+            Logger.Verbose(GetEventLogMsg(e, "SizeChanged"));
+            NotifyScreenSizeChange(e);
+        }
+
+        private void NotifyScreenSizeChange(WindowSizeEventArgs e)
+        {
+            if ((width != e.Width) || (height != e.Height))
+            {
+                width = e.Width;
+                height = e.Height;
+                screen.Resized(width, height);
+                gui.ScreenResized(width, Height);
+                ForEachEnabledApplet(a => a.InternalOnSizeChanged(width, height));
+            }
         }
 
         private void CdxWindow_WindowMinimized(object? sender, EventArgs e)
@@ -681,7 +742,7 @@
         {
             Logger.Verbose(GetEventLogMsg(e, "Hidden"));
             OnHidden(e);
-            //screen.Hide();
+            ForEachEnabledApplet(a => a.OnHidden(e));
         }
 
         private void CdxWindow_WindowFocusGained(object? sender, EventArgs e)
@@ -701,14 +762,6 @@
             Logger.Verbose(GetEventLogMsg(e, "Moved"));
         }
 
-        private void CdxWindow_WindowSizeChanged(object? sender, WindowSizeEventArgs e)
-        {
-            width = e.Width;
-            height = e.Height;
-            Logger.Verbose(GetEventLogMsg(e, "SizeChanged"));
-            screen.Resized(width, height);
-            gui.ScreenResized(width, Height);
-        }
 
         private void CdxWindow_WindowLeave(object? sender, EventArgs e)
         {
@@ -748,10 +801,12 @@
             Close();
         }
 
-        private void CdxWindow_WindowLoad(object? sender, EventArgs e)
+        private void CdxWindow_WindowLoad(object? sender, LoadEventArgs e)
         {
             Logger.Verbose(GetEventLogMsg(e, "Load"));
             OnLoad(e);
+            gui.Initialize(cdxWindow);
+            ForEachEnabledApplet(a => a.InternalOnLoad(e));
         }
     }
 }

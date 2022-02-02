@@ -24,7 +24,8 @@
         }
 
         public Window? ActiveWindow => activeWindow;
-        public Gadget? ActiveGadget => activeGadget;    
+        public Gadget? ActiveGadget => activeGadget;
+        public Gadget? MouseGadget => mouseGadget;
         public string? Title { get => Text; set => Text = value; }
 
         public override void SetDimensions(int x, int y, int w, int h)
@@ -83,6 +84,10 @@
             return null;
         }
 
+        public override void Invalidate()
+        {
+
+        }
         private void CheckWindowActivationQueue()
         {
             if (activationWindows.Count > 0)

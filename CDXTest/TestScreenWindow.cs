@@ -22,11 +22,16 @@
         private IGadget? gad1;
         private IGadget? gad2;
         private IGadget? gad3;
-
-        private IWindow? win2;
         private IGadget? gad4;
 
+        private IWindow? win2;
+        private IGadget? gad5;
+
         private IGadget? cGadget;
+
+        private RainingBoxesApp rainingBoxes = new();
+        private MusicPlayerApp musicPlayer = new();
+        private LinesApp linesApp = new();
         public TestScreenWindow()
             : base("Test Screen")
         {
@@ -39,9 +44,10 @@
                 {
                     screen1 = gui.OpenScreen("Test Screen");
                     win1 = gui.OpenWindow(screen1, leftEdge: 200, topEdge: 200, width: 400, height: 400, title: "Test Window");
-                    gad1 = gui.AddGadget(win1, leftEdge: 10, topEdge: 10, width: -20, height: 40, text: "Continue", clickAction: ContinueClick);
-                    gad2 = gui.AddGadget(win1, leftEdge: 10, topEdge: 60, width: -20, height: 40, text: "New Game", clickAction: NewGameClick);
-                    gad3 = gui.AddGadget(win1, leftEdge: 10, topEdge: 110, width: -20, height: 40, text: "Options", clickAction: OptionsClick);
+                    gad1 = gui.AddGadget(win1, leftEdge: 10, topEdge: 10, width: -20, height: 40, text: "Other", clickAction: OtherClick);
+                    gad2 = gui.AddGadget(win1, leftEdge: 10, topEdge: 60, width: -20, height: 40, text: "Add Boxes", clickAction: BoxesClick);
+                    gad3 = gui.AddGadget(win1, leftEdge: 10, topEdge: 110, width: -20, height: 40, text: "Add Music", clickAction: MusicClick);
+                    gad4 = gui.AddGadget(win1, leftEdge: 10, topEdge: 160, width: -20, height: 40, text: "Add Lines", clickAction: LinesClick);
                     return screen1;
                 }
             };
@@ -52,7 +58,7 @@
                 {
                     screen2 = gui.OpenScreen("Demo Screen");
                     win2 = gui.OpenWindow(screen2, leftEdge: 300, topEdge: 200, width: 400, height: 400, title: "Demo Window");
-                    gad4 = gui.AddGadget(win2, leftEdge: 10, topEdge: 10, width: -20, height: 40, text: "Back", clickAction: BackClick);
+                    gad5 = gui.AddGadget(win2, leftEdge: 10, topEdge: 10, width: -20, height: 40, text: "Back", clickAction: BackClick);
                     return screen2;
                 }
             };
@@ -65,19 +71,51 @@
 
         }
 
-        private void ContinueClick()
+        private void OtherClick()
         {
             Screen = demoScreen;
         }
 
-        private void NewGameClick()
+        private void BoxesClick()
         {
-
+            if (rainingBoxes.Installed)
+            {
+                RemoveApplet(rainingBoxes);
+                gad2.Text = "Add Boxes";
+            }
+            else
+            {
+                AddApplet(rainingBoxes);
+                gad2.Text = "Rem Boxes";
+            }
         }
 
-        private void OptionsClick()
+        private void MusicClick()
         {
+            if (musicPlayer.Installed)
+            {
+                RemoveApplet(musicPlayer);
+                gad3.Text = "Add Music";
+            }
+            else
+            {
+                AddApplet(musicPlayer);
+                gad3.Text = "Rem Music";
+            }
+        }
 
+        private void LinesClick()
+        {
+            if (linesApp.Installed)
+            {
+                RemoveApplet(linesApp);
+                gad4.Text = "Add Lines";
+            }
+            else
+            {
+                AddApplet(linesApp);
+                gad4.Text = "Rem Lines";
+            }
         }
 
         private void BackClick()
@@ -96,11 +134,19 @@
             {
                 ActivateGaget(gad3);
             }
+            else if (cGadget == gad3)
+            {
+                ActivateGaget(gad4);
+            }
         }
 
         private void ActivatePrevGadget()
         {
-            if (cGadget == gad3)
+            if (cGadget == gad4)
+            {
+                ActivateGaget(gad3);
+            }
+            else if (cGadget == gad3)
             {
                 ActivateGaget(gad2);
             }
@@ -116,6 +162,11 @@
             gui.ActivateGadget(cGadget);
         }
 
+        private void ActivateGadgetClick()
+        {
+            gui.ClickActiveGadget();
+        }
+
         protected override void OnControllerButtonUp(ControllerButtonEventArgs e)
         {
             if (e.Button == ControllerButton.Down)
@@ -125,6 +176,10 @@
             else if (e.Button == ControllerButton.Up)
             {
                 ActivatePrevGadget();
+            }
+            else if (e.Button == ControllerButton.X)
+            {
+                ActivateGadgetClick();
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace GadgetGUI
 {
     using CDX;
+    using CDX.Graphics;
     using CDX.GUI;
     using System;
     using System.Collections.Generic;
@@ -11,9 +12,12 @@
 
     internal class GUIRenderer
     {
+
         private static GUIRenderer instance = new GUIRenderer();
         public static GUIRenderer Instance => instance;
         public Color TextColor { get; set; }
+        public Color ActiveTextColor { get; set; }
+        public Color InactiveTextColor { get; set; }
         public Color SelectedTextColor { get; set; }
         public Color WindowBackActive { get; set; }
         public Color WindowBackInactive { get; set; }
@@ -35,6 +39,10 @@
         public Color CellHover { get; set; }
         public Color CellSelected { get; set; }
 
+        private NinePatch? buttonPatch;
+        private NinePatch? buttonSelectedPatch;
+        private NinePatch? buttonHoverPatch;
+
         private GUIRenderer()
         {
             WindowBackActive = Color.FromArgb(128, 45, 45, 45);
@@ -52,6 +60,8 @@
             ShineColor = Color.FromArgb(128, 250, 250, 250);
             ShadowColor = Color.FromArgb(128, 40, 40, 40);
             TextColor = Color.FromArgb(238, 238, 238);
+            ActiveTextColor = Color.FromArgb(238, 238, 238);
+            InactiveTextColor = Color.FromArgb(200, 200, 200);
             SelectedTextColor = Color.FromArgb(255, 255, 255, 255);
             DarkBackColor = Color.FromArgb(230, 55, 55, 55);
             CellBackground = Color.FromArgb(230, 43, 43, 43);
@@ -61,6 +71,12 @@
 
         }
 
+        public void MakeButtonPatches(IImage img)
+        {
+            buttonPatch = new NinePatch(new ImageRegion(img, 0, 0, img.Width, img.Height / 3));
+            buttonSelectedPatch = new NinePatch(new ImageRegion(img, 0, img.Height / 3, img.Width, img.Height / 3));
+            buttonHoverPatch = new NinePatch(new ImageRegion(img, 0, 2 * img.Height / 3, img.Width, img.Height / 3));
+        }
         private void GetWindowColors(Window window, out Color fc, out Color bg)
         {
             if (window.Active && window.MouseHover)
@@ -111,11 +127,12 @@
 
         public void RenderWindow(IGraphics gfx, Window window)
         {
-            Rectangle rect = GetBounds(window);
-            Rectangle inner = GetInnerBounds(window);
-            GetWindowColors(window, out Color fc, out Color bg);
-            //Color fc = window.Active ?  window.MouseHover ? WindowBorderActiveHover : WindowBorderActive : ;
-            //Color bg = window.Active ? WindowBackActive : WindowBackInactive;
+            Rectangle rect = GetRelativeBounds(window);
+            Rectangle inner = GetRelativeInnerBounds(window);
+            //GetWindowColors(window, out Color fc, out Color bg);
+            Color fc = window.Active ? WindowBorderActive : WindowBorderInactive;
+            Color bg = window.Active ? WindowBackActive : WindowBackInactive;
+            Color tc = window.Active ? ActiveTextColor : InactiveTextColor;
             if (!window.Borderless)
             {
                 gfx.Color = fc;
@@ -127,14 +144,11 @@
 
                 RenderBox(gfx, rect, ShineColor, ShadowColor);
                 RenderBox(gfx, inner, ShadowColor, ShineColor);
+                RenderGadgetBorder(gfx, rect, false, false);
                 if (!string.IsNullOrEmpty(window.Title))
                 {
-                    gfx.DrawText(null, window.Title, inner.X, rect.Y, inner.Width, window.BorderTop, TextColor);
+                    gfx.DrawText(null, window.Title, inner.X, rect.Y, inner.Width, window.BorderTop, tc);
                 }
-
-                //    //DrawGadgetBorder(gfx, rect, false, false);
-                //    //gfx.DrawText(null, window.Title, inner.X, rect.Y, inner.Width, window.BorderTop, TextColor);
-
             }
             //if (window.Background != null)
             //{
@@ -154,37 +168,60 @@
         public void RenderGaget(IGraphics gfx, Gadget gadget)
         {
             IBox bounds = gadget.GetBounds();
+            Rectangle windowRect = GetBounds(gadget.Window);
             Rectangle rect = GetBounds(bounds);
             Rectangle inner = GetInnerBounds(bounds);
+            rect.Offset(-windowRect.X, -windowRect.Y);
+            inner.Offset(-windowRect.X, -windowRect.Y);
+            bool hover = gadget.MouseHover;
+            bool selected = gadget.Active;
+
             //Color fc = gadget.Active ? ShadowColor : ShineColor;
             //Color bc = gadget.Active ? ShineColor : ShadowColor;
             GetGadgetColors(gadget, out Color fc, out Color bg);
+            Color tc = gadget.Active ? ActiveTextColor : InactiveTextColor;
             if (!gadget.TransparentBackground)
             {
                 gfx.Color = bg;
                 gfx.FillRect(rect);
             }
-            if (gadget.MouseHover)
+            if (!gadget.IsBorderGadget)
+            {
+                RenderGadgetBorder(gfx, rect, selected, hover);
+            }
+            if (hover)
             {
                 gfx.Color = fc;
-                gfx.DrawRect(rect);
+                gfx.DrawRect(rect.X + 3, rect.Y + 3, rect.Width - 6, rect.Height - 6);
             }
-            //RenderBox(gfx, rect, fc, bc);
-            //RenderBox(gfx, inner, bc, fc);
             if (gadget.Active)
             {
                 inner.X += 1;
                 inner.Y += 1;
-                //inner.Width -= 2;
-                //inner.Height -= 1;
-            }
-            if (!string.IsNullOrEmpty(gadget.Text))
-            {
-                gfx.DrawText(null, gadget.Text, inner.X, inner.Y, inner.Width, inner.Height, TextColor);
             }
             if (gadget.Icon != CDX.Graphics.Icons.NONE)
             {
-                gfx.DrawIcon(gadget.Icon, inner.X, inner.Y, inner.Width, inner.Height, TextColor);
+                gfx.DrawIcon(gadget.Icon, inner.X, inner.Y, inner.Width, inner.Height, tc);
+            }
+            if (!string.IsNullOrEmpty(gadget.Text))
+            {
+                gfx.DrawText(null, gadget.Text, inner.X, inner.Y, inner.Width, inner.Height, tc);
+            }
+        }
+
+        private void RenderGadgetBorder(IGraphics gfx, Rectangle rect, bool selected, bool hover)
+        {
+            if (selected)
+            {
+                gfx.DrawNinePatch(buttonSelectedPatch, rect.X, rect.Y, rect.Width, rect.Height, NinePatchFillMode.Stretch);
+            }
+            else if (hover)
+            {
+                gfx.DrawNinePatch(buttonHoverPatch, rect.X, rect.Y, rect.Width, rect.Height, NinePatchFillMode.Stretch);
+            }
+            else
+            {
+                gfx.DrawNinePatch(buttonPatch, rect.X, rect.Y, rect.Width, rect.Height, NinePatchFillMode.Stretch);
             }
         }
 
@@ -198,7 +235,7 @@
             gfx.DrawLine(rect.Right - 1, rect.Top, rect.Right - 1, rect.Bottom - 1);
         }
 
-        private static Rectangle GetInnerBounds(IBox box)
+        public static Rectangle GetInnerBounds(IBox box)
         {
             Rectangle rect = GetBounds(box);
             rect.X += box.BorderLeft;
@@ -208,9 +245,23 @@
             return rect;
         }
 
-        private static Rectangle GetBounds(IBox box)
+        public static Rectangle GetBounds(IBox box)
         {
             return new Rectangle(box.LeftEdge, box.TopEdge, box.Width, box.Height);
+        }
+        private static Rectangle GetRelativeInnerBounds(IBox box)
+        {
+            Rectangle rect = GetRelativeBounds(box);
+            rect.X += box.BorderLeft;
+            rect.Y += box.BorderTop;
+            rect.Width -= (box.BorderLeft + box.BorderRight);
+            rect.Height -= (box.BorderTop + box.BorderBottom);
+            return rect;
+        }
+
+        private static Rectangle GetRelativeBounds(IBox box)
+        {
+            return new Rectangle(0, 0, box.Width, box.Height);
         }
     }
 }

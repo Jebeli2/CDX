@@ -300,6 +300,47 @@
             }
         }
 
+        public void ClearScreen(Color color)
+        {
+            SDL_SetRenderDrawColor(handle, color.R, color.G, color.B, color.A);
+            SDL_RenderClear(handle);
+        }
+
+        public void SetTarget(IImage? image)
+        {
+            if (image != null && image is SDLTexture tex)
+            {
+                SDL_SetRenderTarget(handle, tex.Handle);
+                SDL_SetRenderDrawBlendMode(handle, blendMode);
+            }
+            else
+            {
+                ClearTarget();
+            }
+        }
+        public void ClearTarget()
+        {
+            SDL_SetRenderTarget(handle, IntPtr.Zero);
+            SDL_SetRenderDrawBlendMode(handle, blendMode);
+        }
+
+        public IImage? CreateImage(string name, int width, int height)
+        {
+            SDLTexture? texture = null;
+            if (!string.IsNullOrEmpty(name))
+            {
+                _ = SDLApplication.SDL_SetHint(SDLApplication.SDL_HINT_RENDER_SCALE_QUALITY, ((int)textureFilter).ToString());
+                IntPtr tex = SDL_CreateTexture(handle, SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET, width, height);
+                if (tex != IntPtr.Zero)
+                {
+                    texture = new SDLTexture(CDX.Content.ContentFlags.Created, this, tex, name);
+                    
+                    Logger.Info($"Image created from scratch '{name}'");
+                }
+            }
+            return texture;
+        }
+
 
         public IImage? LoadImage(string name)
         {
@@ -659,6 +700,67 @@
             }
         }
 
+        private enum SDL_PixelType
+        {
+            SDL_PIXELTYPE_UNKNOWN,
+            SDL_PIXELTYPE_INDEX1,
+            SDL_PIXELTYPE_INDEX4,
+            SDL_PIXELTYPE_INDEX8,
+            SDL_PIXELTYPE_PACKED8,
+            SDL_PIXELTYPE_PACKED16,
+            SDL_PIXELTYPE_PACKED32,
+            SDL_PIXELTYPE_ARRAYU8,
+            SDL_PIXELTYPE_ARRAYU16,
+            SDL_PIXELTYPE_ARRAYU32,
+            SDL_PIXELTYPE_ARRAYF16,
+            SDL_PIXELTYPE_ARRAYF32
+        }
+
+        private enum SDL_PackedLayout
+        {
+            SDL_PACKEDLAYOUT_NONE,
+            SDL_PACKEDLAYOUT_332,
+            SDL_PACKEDLAYOUT_4444,
+            SDL_PACKEDLAYOUT_1555,
+            SDL_PACKEDLAYOUT_5551,
+            SDL_PACKEDLAYOUT_565,
+            SDL_PACKEDLAYOUT_8888,
+            SDL_PACKEDLAYOUT_2101010,
+            SDL_PACKEDLAYOUT_1010102
+        }
+
+        private enum SDL_PackedOrder
+        {
+            SDL_PACKEDORDER_NONE,
+            SDL_PACKEDORDER_XRGB,
+            SDL_PACKEDORDER_RGBX,
+            SDL_PACKEDORDER_ARGB,
+            SDL_PACKEDORDER_RGBA,
+            SDL_PACKEDORDER_XBGR,
+            SDL_PACKEDORDER_BGRX,
+            SDL_PACKEDORDER_ABGR,
+            SDL_PACKEDORDER_BGRA
+        }
+        private static uint SDL_DEFINE_PIXELFORMAT(SDL_PixelType type, uint order, SDL_PackedLayout layout, byte bits, byte bytes)
+        {
+            return (uint)((1 << 28) |
+                   (((byte)type) << 24) |
+                   (((byte)order) << 20) |
+                   (((byte)layout) << 16) |
+                   (bits << 8) |
+                   (bytes)
+             );
+        }
+
+        public static readonly uint SDL_PIXELFORMAT_ARGB8888 = SDL_DEFINE_PIXELFORMAT(SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB, SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 32, 4);
+
+        private enum SDL_TextureAccess
+        {
+            SDL_TEXTUREACCESS_STATIC,
+            SDL_TEXTUREACCESS_STREAMING,
+            SDL_TEXTUREACCESS_TARGET
+        }
+
         [Flags]
         internal enum SDL_RendererFlags : uint
         {
@@ -752,9 +854,13 @@
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SDL_RenderFillRectF(IntPtr renderer, [In()] ref RectangleF rect);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr SDL_CreateTexture(IntPtr renderer, uint format, SDL_TextureAccess access, int w, int h);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SDL_DestroyTexture(IntPtr texture);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int SDL_QueryTexture(IntPtr texture, out uint format, out int access, out int w, out int h);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int SDL_SetRenderTarget(IntPtr renderer, IntPtr texture);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SDL_RenderCopy(IntPtr renderer, IntPtr texture, [In()] ref Rectangle srcrect, [In()] ref Rectangle dstrect);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]

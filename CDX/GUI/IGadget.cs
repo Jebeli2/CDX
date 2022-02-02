@@ -10,7 +10,7 @@
     {
         GadgetFlags Flags { get; }  
         GadgetActivation Activation { get; }
-        string? Text { get; }
+        string? Text { get; set; }
         int GadgetID { get; set; }
     }
 }

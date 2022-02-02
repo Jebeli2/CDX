@@ -63,7 +63,10 @@
         public void AddWindow(Window window)
         {
             CDXWindow cdx = CreateWindow(window);
-            if (window.Visible) { cdx.Show(); }
+            if (window.Visible)
+            {                
+                cdx.Show();
+            }
         }
 
         public void Exit()

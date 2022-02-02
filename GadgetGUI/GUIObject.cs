@@ -26,6 +26,7 @@
                 if (!string.Equals(text, value))
                 {
                     SetText(value);
+                    Invalidate();
                 }
             }
         }
@@ -37,6 +38,8 @@
 
         public abstract void Update(FrameTime time);
         public abstract void Render(IGraphics gfx, FrameTime time);
+
+        public abstract void Invalidate();
 
     }
 }

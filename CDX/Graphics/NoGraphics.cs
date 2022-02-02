@@ -161,6 +161,24 @@
         {
             return null;
         }
+        public IImage? CreateImage(string name, int width, int height)
+        {
+            return null;
+        }
+
+        public void ClearScreen(Color color)
+        {
+
+        }
+
+        public void SetTarget(IImage? image)
+        {
+
+        }
+        public void ClearTarget()
+        {
+
+        }
 
         public void ResetViewport()
         {

@@ -184,7 +184,7 @@
 
         internal void RaiseLoad()
         {
-            OnWindowLoad(EventArgs.Empty);
+            OnWindowLoad(new LoadEventArgs(graphics, this));
         }
 
         internal void RaiseClose()

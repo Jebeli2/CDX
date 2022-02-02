@@ -9,17 +9,12 @@
 
     public class NoWindow : CDXWindow
     {
-        public NoWindow()
-            :base()
-        {
-
-        }
         public NoWindow(Window window)
             : base(window)
         {
 
         }
-        public override uint WindowID => 0;
+        public override uint WindowID => 0xFFFFFFFF;
 
         public override IAudio Audio => NoAudio.Instance;
 

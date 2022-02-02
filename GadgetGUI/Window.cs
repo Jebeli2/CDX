@@ -16,6 +16,8 @@
         private readonly Screen screen;
         private WindowFlags windowFlags;
         private readonly List<Gadget> gadgets = new();
+        private IImage? bitmap;
+        private bool valid;
         public Window(GUISystem gui, Screen screen)
             : base(gui)
         {
@@ -37,6 +39,7 @@
                 if (windowFlags != value)
                 {
                     windowFlags = value;
+                    Invalidate();
                 }
             }
         }
@@ -87,6 +90,8 @@
             }
         }
 
+
+
         public override void Update(FrameTime time)
         {
             foreach (Gadget gad in gadgets)
@@ -97,12 +102,29 @@
 
         public override void Render(IGraphics gfx, FrameTime time)
         {
-            GUIRenderer.Instance.RenderWindow(gfx, this);
-            foreach (Gadget gad in gadgets)
+            if (!valid)
             {
-                gad.Render(gfx, time);
+                CheckBitmap(gfx);
+                gfx.SetTarget(bitmap);
+                gfx.ClearScreen(Color.FromArgb(0, 0, 0, 0));
+                gfx.SetTarget(bitmap);
+                GUIRenderer.Instance.RenderWindow(gfx, this);
+                foreach (Gadget gad in gadgets)
+                {
+                    gad.Render(gfx, time);
+                }
+                gfx.ClearTarget();
+                valid = true;
             }
-
+            if (valid)
+            {
+                if (bitmap != null)
+                {
+                    Rectangle rect = GUIRenderer.GetBounds(this);
+                    Rectangle src = new Rectangle(0, 0, rect.Width, rect.Height);
+                    gfx.DrawImage(bitmap, src, rect);
+                }
+            }
         }
 
         public void AddGadget(Gadget gadget)
@@ -203,8 +225,14 @@
         //    }
         //    return false;
         //}
+
+        public override void Invalidate()
+        {
+            valid = false;
+        }
         private void InvalidateBounds()
         {
+            Invalidate();
             foreach (Gadget gadget in gadgets)
             {
                 gadget.InvalidateBounds();
@@ -229,6 +257,21 @@
         {
             base.SetDimensions(x, y, w, h);
             InvalidateBounds();
+        }
+
+        private void InitBitmap(IGraphics gfx)
+        {
+            bitmap?.Dispose();
+            bitmap = gfx.CreateImage("Window_" + Title, Width, Height);
+
+        }
+
+        private void CheckBitmap(IGraphics gfx)
+        {
+            if (bitmap == null || bitmap.Width < Width || bitmap.Height < Height)
+            {
+                InitBitmap(gfx);
+            }
         }
     }
 }

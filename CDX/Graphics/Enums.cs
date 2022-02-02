@@ -67,4 +67,10 @@
         Center,
         Stretch
     }
+
+    public enum NinePatchFillMode
+    {
+        Stretch,
+        Repeat
+    }
 }

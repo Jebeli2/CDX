@@ -10,10 +10,19 @@
 
     internal class NoGUI : IGUISystem
     {
-        public void SetCDXWindow(CDXWindow cdx)
+        public void Initialize(CDXWindow cdx)
         {
 
         }
+        public void Shutdown()
+        {
+
+        }
+
+        //public void SetCDXWindow(CDXWindow cdx)
+        //{
+
+        //}
         public void ScreenResized(int width, int height)
         {
 
@@ -57,6 +66,11 @@
 
         }
         public void ActivateGadget(IGadget? gadget)
+        {
+
+        }
+
+        public void ClickActiveGadget()
         {
 
         }

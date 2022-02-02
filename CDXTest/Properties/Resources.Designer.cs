@@ -73,6 +73,16 @@ namespace CDXTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bach {
+            get {
+                object obj = ResourceManager.GetObject("bach", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] badlands {
             get {
                 object obj = ResourceManager.GetObject("badlands", resourceCulture);

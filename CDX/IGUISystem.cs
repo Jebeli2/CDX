@@ -12,6 +12,8 @@
 
     public interface IGUISystem : IMouseListener, IKeyboardListener, ITouchFingerListener, IControllerListener
     {
+        void Initialize(CDXWindow cdx);
+        void Shutdown();
         void ScreenResized(int width, int height);
         void Clear();
         void SetScreen(GUI.IScreen? screen);
@@ -24,6 +26,7 @@
         void CloseWindow(IWindow? window);
         void ActivateWindow(IWindow? window);
         void ActivateGadget(IGadget? gadget);
+        void ClickActiveGadget();
         IGadget? AddGadget(IWindow? window,
             int leftEdge = 0,
             int topEdge = 0,

@@ -54,11 +54,6 @@
         private static readonly object touchFingerDownEventKey = new();
         private static readonly object touchFingerMotionEventKey = new();
 
-        protected CDXWindow()
-        {
-            graphics = NoGraphics.Instance;
-            window = new Window(this);
-        }
         protected CDXWindow(Window window)
         {
             graphics = NoGraphics.Instance;
@@ -95,7 +90,7 @@
         public abstract IAudio Audio { get; }
         public IGraphics Graphics => graphics;
 
-        public event EventHandler WindowLoad
+        public event LoadEventHandler WindowLoad
         {
             add => eventHandlerList.AddHandler(windowLoadEventKey, value); remove => eventHandlerList.RemoveHandler(windowLoadEventKey, value);
         }
@@ -251,9 +246,9 @@
             add => eventHandlerList.AddHandler(touchFingerMotionEventKey, value); remove => eventHandlerList.RemoveHandler(touchFingerMotionEventKey, value);
         }
 
-        protected virtual void OnWindowLoad(EventArgs e)
+        protected virtual void OnWindowLoad(LoadEventArgs e)
         {
-            ((EventHandler?)eventHandlerList[windowLoadEventKey])?.Invoke(this, e);
+            ((LoadEventHandler?)eventHandlerList[windowLoadEventKey])?.Invoke(this, e);
         }
         protected virtual void OnWindowShown(EventArgs e)
         {

@@ -1,6 +1,7 @@
 ﻿namespace CDXTest
 {
     using CDX;
+    using CDX.App;
     using CDX.Graphics;
     using CDX.Input;
     using System;
@@ -75,7 +76,7 @@
         }
 
 
-        protected override void OnLoad(EventArgs e)
+        protected override void OnLoad(LoadEventArgs e)
         {
             InstallDefaultHotKeys();
             img1 = LoadImage("badlands");
