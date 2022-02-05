@@ -37,8 +37,25 @@
         void DrawImage(IImage? image);
         void DrawImage(IImage? image, RectangleF dst);
         void DrawImage(IImage? image, Rectangle dst);
+        void DrawImage(IImage? image, int x, int y)
+        {
+            if (image != null)
+            {
+                DrawImage(image, new Rectangle(x, y, image.Width, image.Height));
+            }
+        }
+        void DrawImage(IImage? image, int x, int y, int w, int h, int dx, int dy, int dw, int dh)
+        {
+            if (image != null)
+            {
+                DrawImage(image, new Rectangle(x, y, w, h), new Rectangle(dx, dy, dw, dh));
+            }
+        }
+
         void DrawImage(IImage? image, Rectangle src, RectangleF dst);
         void DrawImage(IImage? image, Rectangle src, Rectangle dst);
+
+        void DrawImage(IImage? image, Rectangle src, Rectangle dst, byte alpha);
         void DrawImage(IImage? image, RenderFlip flip);
         void DrawImage(IImage? image, int x, int y, int w, int h)
         {
@@ -76,6 +93,21 @@
                 DrawImage(image.Image, image.SourceRect, new Rectangle(x, y, image.Width, image.Height));
             }
         }
+        void DrawImageRegion(IImageRegion? image, int x, int y, byte alpha)
+        {
+            if (image != null)
+            {
+                DrawImage(image.Image, image.SourceRect, new Rectangle(x, y, image.Width, image.Height), alpha);
+            }
+        }
+
+        void DrawSprite(ISprite sprite, int x, int y)
+        {
+            if (sprite != null)
+            {
+                DrawImage(sprite.Image, sprite.SourceRect, new Rectangle(x - sprite.OffsetX, y - sprite.OffsetY, sprite.Width, sprite.Height));
+            }
+        }
 
         void DrawText(ITextFont? font, string? text, float x, float y, float width, float height, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Center, VerticalAlignment vAlign = VerticalAlignment.Center);
         void DrawText(ITextFont? font, string? text, float x, float y, Color color)
@@ -86,6 +118,8 @@
         {
             DrawText(font, text, x, y, Color);
         }
+
+        Size MeasureText(ITextFont? font, string? text);
 
         void DrawIcon(Icons icon, float x, float y, float width, float height, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Center, VerticalAlignment vAlign = VerticalAlignment.Center);
         void DrawIcon(Icons icon, float x, float y, Color color)
@@ -159,6 +193,7 @@
         }
 
         void SetTarget(IImage? image);
+        void ResetTarget();
         void ClearTarget();
 
         IImage? CreateImage(string name, int width, int height);

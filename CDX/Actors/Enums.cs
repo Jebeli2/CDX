@@ -1,4 +1,4 @@
-﻿namespace CDX.Maps.Tiled
+﻿namespace CDX.Actors
 {
     using System;
     using System.Collections.Generic;
@@ -6,10 +6,11 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class TileSet
+    public enum ActorAction
     {
-        private ITiledMapTile[] tiles = Array.Empty<ITiledMapTile>();
-
-
+        None,
+        Move,
+        Interact,
+        Attack
     }
 }

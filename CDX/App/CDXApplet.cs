@@ -61,9 +61,11 @@
         }
         internal void InternalOnSizeChanged(int width, int height)
         {
-            this.width = width;
-            this.height = height;
-            OnSizeChanged(width, height);
+            //this.width = width;
+            //this.height = height;
+            this.width = Graphics.Width;
+            this.height = Graphics.Height;
+            OnSizeChanged(this.width, this.height);
         }
 
         public virtual void OnSizeChanged(int width, int height)

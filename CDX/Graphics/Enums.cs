@@ -73,4 +73,12 @@
         Stretch,
         Repeat
     }
+
+    public enum AnimationType
+    {
+        None,
+        PlayOnce,
+        Looped,
+        BackForth
+    }
 }

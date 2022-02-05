@@ -5,6 +5,7 @@
     using CDX.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
@@ -65,6 +66,16 @@
         public int LineSkip => fontLineSkip;
         public int Kerning => fontKerning;
 
+        public Size MeasureText(string? text)
+        {
+            int w = 0;
+            int h = 0;
+            if (!string.IsNullOrEmpty(text))
+            {
+                _ = TTF_SizeUTF8(Handle, text, out w, out h);
+            }
+            return new Size(w, h);
+        }
         public static SDLFont? LoadFont(string fileName, int ptSize)
         {
             SDLFont? font = null;

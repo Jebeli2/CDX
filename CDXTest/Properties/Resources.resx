@@ -148,6 +148,9 @@
   <data name="dungeon_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dungeon_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="female_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\female.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="fire_temple" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\fire_temple.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -166,6 +169,9 @@
   <data name="magical_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\magical_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="male_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\male.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="obelisk" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\obelisk.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -177,6 +183,18 @@
   </data>
   <data name="Tetris Theme Variations on Piano" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Tetris Theme Variations on Piano.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tiled_collision" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tiled_collision.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tileset_collision_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tileset_collision.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tileset_markers" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tileset_markers.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tileset_markers_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tileset_markers.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="title_theme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\title_theme.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

@@ -20,7 +20,7 @@
         private TimeSpan accumulatedElapsedTime;
         private TimeSpan targetElapsedTime = TimeSpan.FromTicks(166667);
         private TimeSpan maxElapsedTime = TimeSpan.FromMilliseconds(500);
-        private TimeSpan warnSlowTime = TimeSpan.FromSeconds(10);
+        private TimeSpan warnSlowTime = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan oneSecondTimeSpan = new(0, 0, 1);
         private TimeSpan fpsTimer = oneSecondTimeSpan;
         private TimeSpan slowTimer = TimeSpan.Zero;
@@ -64,7 +64,7 @@
         {
             CDXWindow cdx = CreateWindow(window);
             if (window.Visible)
-            {                
+            {
                 cdx.Show();
             }
         }
@@ -138,6 +138,8 @@
                 win.FullScreen = context.Configuration.FullScreen;
                 win.Width = context.Configuration.Width;
                 win.Height = context.Configuration.Height;
+                win.BackBufferWidth = context.Configuration.BackBufferWidth;
+                win.BackBufferHeight = context.Configuration.BackBufferHeight;
                 win.ShowFPS = context.Configuration.ShowFPS;
                 win.FPSPosX = context.Configuration.FPSPosX;
                 win.FPSPosY = context.Configuration.FPSPosY;

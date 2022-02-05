@@ -29,6 +29,7 @@
         bool IsPaused { get; }
         void ClearPlayList();
         void AddToPlayList(string name, int loops = 1);
+        void PlayNow(string name, int loops = 1);
         void NextMusic();
         void PreviousMusic();        
         void StopMusic();

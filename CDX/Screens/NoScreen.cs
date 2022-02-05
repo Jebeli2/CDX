@@ -46,7 +46,7 @@
         {
         }
 
-        public void Render(FrameTime time)
+        public void Render(IGraphics graphics, FrameTime time)
         {
         }
 

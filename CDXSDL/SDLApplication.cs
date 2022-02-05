@@ -63,6 +63,8 @@
             _ = SDL_SetHint(SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED, "1");
             _ = SDL_SetHint(SDL_BORDERLESS_WINDOWED_STYLE, "1");
             _ = SDL_SetHint(SDL_BORDERLESS_RESIZABLE_STYLE, "1");
+            _ = SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "0");
+            _ = SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_SCALING, "1");
             GetDriverInfos();
             _ = SDLTexture.IMG_Init(SDLTexture.IMG_InitFlags.IMG_INIT_PNG);
             _ = SDLFont.TTF_Init();

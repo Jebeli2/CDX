@@ -128,6 +128,15 @@
             playList.Add(entry);
         }
 
+        public void PlayNow(string name, int loops = 1)
+        {
+            PlayListEntry entry = new PlayListEntry() { Name = name, Loop = loops };
+            playListIndex = -1;
+            playList.Clear();
+            playList.Add(entry);
+            NextMusic();
+        }
+
         protected void CheckPlayListQueue()
         {
             if (playQueue.Count > 0)

@@ -11,12 +11,30 @@
         private string name = string.Empty;
         private byte alpha = 255;
         private bool visible;
+        private int width;
+        private int height;
+        private int tileWidth;
+        private int tileHeight;
         private float offsetX;
         private float offsetY;
-        private float renderOffsetX;
-        private float renderOffsetY;
-        private bool renderOffsetDirty = true;
-        private MapLayer? parent;
+        private int[,] tiles;
+        private LayerType layerType;
+
+        public MapLayer(string name, int width, int height, int tileWidth, int tileHeight)
+        {
+            this.name = name;
+            this.width = width;
+            this.height = height;
+            this.tileWidth = tileWidth;
+            this.tileHeight = tileHeight;
+            tiles = new int[width, height];
+        }
+
+        public LayerType Type
+        {
+            get => layerType;
+            set => layerType = value;
+        }
 
         public string Name
         {
@@ -39,71 +57,33 @@
         public float OffsetX
         {
             get => offsetX;
-            set
-            {
-                offsetX = value;
-                InvalidateRenderOffset();
-            }
+            set => offsetX = value;
         }
 
         public float OffsetY
         {
             get => offsetY;
-            set
-            {
-                offsetY = value;
-                InvalidateRenderOffset();
-            }
+            set => offsetY = value;
         }
 
-        public float RenderOffsetX
+        public int Width => width;
+        public int Height => height;
+
+        public int TileWidth
         {
-            get
-            {
-                if (renderOffsetDirty) { CalculateRenderOffsets(); }
-                return renderOffsetX;
-            }
+            get => tileWidth;
+            set => tileWidth = value;
+        }
+        public int TileHeight
+        {
+            get => tileHeight;
+            set => tileHeight = value;
         }
 
-        public float RenderOffsetY
+        public int this[int x, int y]
         {
-            get
-            {
-                if (renderOffsetDirty) { CalculateRenderOffsets(); }
-                return renderOffsetY;
-            }
-        }
-
-        public MapLayer? Parent
-        {
-            get => parent;
-            set
-            {
-                if (value == this) throw new InvalidOperationException("Can't set self as parent");
-                parent = value;
-                InvalidateRenderOffset();
-            }
-        }
-
-        public void InvalidateRenderOffset()
-        {
-            renderOffsetDirty = true;
-        }
-
-        protected void CalculateRenderOffsets()
-        {
-            if (parent != null)
-            {
-                parent.CalculateRenderOffsets();
-                renderOffsetX = parent.RenderOffsetX + offsetX;
-                renderOffsetY = parent.RenderOffsetY + offsetY;
-            }
-            else
-            {
-                renderOffsetX = offsetX;
-                renderOffsetY = offsetY;
-            }
-            renderOffsetDirty = false;
+            get => tiles[x, y];
+            set => tiles[x, y] = value;
         }
     }
 }

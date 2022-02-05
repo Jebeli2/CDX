@@ -13,7 +13,7 @@
         void Show();
         void Hide();
         void Update(FrameTime time);
-        void Render(FrameTime time);
+        void Render(IGraphics graphics, FrameTime time);
         void Pause();
         void Resume();
         void Resized(int width, int height);

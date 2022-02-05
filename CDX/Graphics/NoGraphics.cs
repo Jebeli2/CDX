@@ -46,6 +46,10 @@
         {
 
         }
+        public void DrawImage(IImage? image, Rectangle src, Rectangle dst, byte alpha)
+        {
+
+        }
 
         public void DrawImage(IImage? image, RenderFlip flip)
         {
@@ -116,7 +120,10 @@
         {
 
         }
-
+        public Size MeasureText(ITextFont? font, string? text)
+        {
+            return Size.Empty;
+        }
         public void DrawIcon(Icons icon, float x, float y, float width, float height, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Center, VerticalAlignment vAlign = VerticalAlignment.Center)
         {
 
@@ -172,6 +179,11 @@
         }
 
         public void SetTarget(IImage? image)
+        {
+
+        }
+
+        public void ResetTarget()
         {
 
         }

@@ -19,7 +19,7 @@
         public const int BOTTOM_CENTER = 7;
         public const int BOTTOM_RIGHT = 8;
 
-        private readonly IImage image;
+        private readonly IImage? image;
         private readonly Rectangle[] patches = new Rectangle[9];
         private int patchWidth;
         private int patchHeight;
@@ -38,7 +38,7 @@
         }
         public int PatchWidth => patchWidth;
         public int PatchHeight => patchHeight;
-        public IImage Image => image;
+        public IImage? Image => image;
         public IList<Rectangle> Patches => patches;
 
         public IList<IImageRegion> GetRegions()
@@ -50,9 +50,13 @@
             return regions;
         }
 
-        private IImageRegion GetRegion(int index)
+        private IImageRegion? GetRegion(int index)
         {
-            return new ImageRegion(image, patches[index].X, patches[index].Y, patches[index].Width, patches[index].Height);
+            if (image != null)
+            {
+                return new ImageRegion(image, patches[index].X, patches[index].Y, patches[index].Width, patches[index].Height);
+            }
+            return null;
         }
 
         private void FillRegions()
@@ -60,7 +64,8 @@
             regions.Clear();
             for (int i = 0; i < patches.Length; i++)
             {
-                regions.Add(GetRegion(i));
+                IImageRegion? region = GetRegion(i);
+                if (region != null) { regions.Add(region); }
             }
         }
         private void Fill(Rectangle src)

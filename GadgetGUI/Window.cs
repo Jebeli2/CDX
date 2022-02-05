@@ -107,13 +107,12 @@
                 CheckBitmap(gfx);
                 gfx.SetTarget(bitmap);
                 gfx.ClearScreen(Color.FromArgb(0, 0, 0, 0));
-                gfx.SetTarget(bitmap);
                 GUIRenderer.Instance.RenderWindow(gfx, this);
                 foreach (Gadget gad in gadgets)
                 {
                     gad.Render(gfx, time);
                 }
-                gfx.ClearTarget();
+                gfx.ResetTarget();
                 valid = true;
             }
             if (valid)

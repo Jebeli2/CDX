@@ -1,6 +1,7 @@
 ﻿namespace CDX.App
 {
     using CDX.Audio;
+    using CDX.Content;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,14 +10,12 @@
 
     public class NoWindow : CDXWindow
     {
-        public NoWindow(Window window)
-            : base(window)
+        public NoWindow(CDXApplication app, Window window)
+            : base(app, window)
         {
 
         }
         public override uint WindowID => 0xFFFFFFFF;
-
-        public override IAudio Audio => NoAudio.Instance;
 
         public override void Close()
         {
@@ -48,6 +47,11 @@
 
         public override void SetSize(int width, int height)
         {
+        }
+
+        public override void SetBackBufferSize(int width, int height)
+        {
+            
         }
         public override void SetMousePosition(int x, int y)
         {

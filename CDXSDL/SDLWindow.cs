@@ -27,16 +27,16 @@
         private UpdateEventArgs? updateEventArgs;
 
         public SDLWindow(SDLApplication app, Window window)
-            : base(window)
+            : base(app, window)
         {
             this.app = app;
         }
-        public SDLApplication App => app;
-        public override IAudio Audio => app.Audio;
+        internal SDLApplication App => app;
 
         public IntPtr Handle => handle;
         public bool HandleCreated => handle != IntPtr.Zero;
         public override uint WindowID => windowID;
+
 
         public override void SetTitle(string title)
         {
@@ -112,7 +112,17 @@
         {
             if (HandleCreated)
             {
+                Width = width;
+                Height = height;
                 SDL_SetWindowSize(handle, width, height);
+            }
+        }
+
+        public override void SetBackBufferSize(int width, int height)
+        {
+            if (HandleCreated)
+            {
+                renderer?.SetBackBufferSize(width, height);
             }
         }
 
@@ -220,6 +230,35 @@
             //SDL_SetWindowPosition(handle, oldX, oldY);
         }
 
+        private void ScaleMouseX(ref int x)
+        {
+            if (BackBufferWidth == 0) return;
+            if (Width > BackBufferWidth)
+            {
+                double scale = (double)Width / BackBufferWidth;
+                x = (int)(x / scale);
+            }
+            else if (Width < BackBufferWidth)
+            {
+                double scale = (double)BackBufferWidth / Width;
+                x = (int)(x * scale);
+            }
+        }
+        private void ScaleMouseY(ref int y)
+        {
+            if (BackBufferHeight == 0) return;
+            if (Height > BackBufferHeight)
+            {
+                double scale = (double)Height / BackBufferHeight;
+                y = (int)(y / scale);
+            }
+            else if (Height < BackBufferHeight)
+            {
+                double scale = (double)BackBufferHeight / Height;
+                y = (int)(y * scale);
+            }
+        }
+
         internal void RaiseLoad()
         {
             OnWindowLoad(new LoadEventArgs(graphics, this));
@@ -290,13 +329,17 @@
         internal void RaiseResized()
         {
             SDL_GetWindowSize(handle, out int w, out int h);
-            renderer?.UpdateSize();
+            Width = w;
+            Height = h;
+            renderer?.CheckSizes();
             OnWindowResized(new WindowSizeEventArgs(w, h));
         }
         internal void RaiseSizeChanged()
         {
             SDL_GetWindowSize(handle, out int w, out int h);
-            renderer?.UpdateSize();
+            Width = w;
+            Height = h;
+            renderer?.CheckSizes();
             OnWindowSizeChanged(new WindowSizeEventArgs(w, h));
         }
 
@@ -309,7 +352,7 @@
                 if (showFPS)
                 {
                     renderer.ResetViewport();
-                    ((IGraphics)renderer).DrawText(null, app.FPSText, fpsPosX, fpsPosY, Color.White);
+                    ((IGraphics)renderer).DrawText(null, Application.FPSText, fpsPosX, fpsPosY, Color.White);
                 }
                 renderer.EndPaint();
             }
@@ -322,14 +365,22 @@
 
         internal void RaiseMouseButtonDown(int which, int x, int y, MouseButton button, KeyButtonState state, int clicks)
         {
+            ScaleMouseX(ref x);
+            ScaleMouseY(ref y);
             OnMouseButtonDown(new MouseButtonEventArgs(which, x, y, button, state, clicks));
         }
         internal void RaiseMouseButtonUp(int which, int x, int y, MouseButton button, KeyButtonState state, int clicks)
         {
+            ScaleMouseX(ref x);
+            ScaleMouseY(ref y);
             OnMouseButtonUp(new MouseButtonEventArgs(which, x, y, button, state, clicks));
         }
         internal void RaiseMouseMove(int which, int x, int y, int relX, int relY)
         {
+            ScaleMouseX(ref x);
+            ScaleMouseY(ref y);
+            ScaleMouseX(ref relX);
+            ScaleMouseY(ref relY);
             OnMouseMove(new MouseMotionEventArgs(which, x, y, relX, relY));
         }
         internal void RaiseMouseWheel(int which, int x, int y, float preciseX, float preciseY, MouseWheelDirection direction)
@@ -396,7 +447,12 @@
             {
                 windowID = SDL_GetWindowID(handle);
                 Logger.Info($"SDL Window {windowID} created");
+                Width = window.Width;
+                Height = window.Height;
+                BackBufferWidth = window.BackBufferWidth;
+                BackBufferHeight = window.BackBufferHeight;
                 renderer = new SDLRenderer(this);
+                renderer.CheckSizes();
                 graphics = renderer;
                 if (window.FullScreen)
                 {

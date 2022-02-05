@@ -18,6 +18,8 @@
         private readonly SDLWindow window;
         private readonly SDLApplication app;
         private IntPtr handle;
+        private IntPtr backBufferHandle;
+        private bool useBackBuffer;
         private SDL_BlendMode blendMode;
         private TextureFilter textureFilter = TextureFilter.Nearest;
         private byte colorR;
@@ -25,8 +27,12 @@
         private byte colorB;
         private byte colorA;
         private Color color;
+        private int backBufferWidth;
+        private int backBufferHeight;
         private int width;
         private int height;
+        private Rectangle backBufferRect;
+        private Rectangle windowRect;
         private Rectangle viewPort;
         private readonly Dictionary<string, TextCache> textCache = new();
         private readonly List<string> textCacheKeys = new();
@@ -34,6 +40,7 @@
         private readonly Dictionary<Icons, IconCache> iconCache = new();
         private readonly List<Icons> iconCacheKeys = new();
         private int iconCacheLimit = 100;
+        private readonly Queue<IntPtr> prevTargets = new();
 
         private PaintEventArgs? paintEventArgs;
 
@@ -42,7 +49,6 @@
             this.window = window;
             app = this.window.App;
             handle = CreateHandle(this.window);
-
         }
 
         private IntPtr CreateHandle(SDLWindow window)
@@ -55,8 +61,12 @@
             {
                 _ = SDL_GetRenderDrawBlendMode(handle, out blendMode);
                 _ = SDL_GetRenderDrawColor(handle, out colorR, out colorG, out colorB, out colorA);
-                _ = SDL_GetRendererOutputSize(handle, out width, out height);
+                //_ = SDL_GetRendererOutputSize(handle, out width, out height);
                 _ = SDL_RenderGetViewport(handle, out viewPort);
+                width = window.Width;
+                height = window.Height;
+                backBufferWidth = window.BackBufferWidth;
+                backBufferHeight = window.BackBufferHeight;
                 _ = SDL_GetRendererInfo(handle, out SDL_RendererInfo info);
                 Logger.Info($"SDLRenderer {window.WindowID} created: {Marshal.PtrToStringUTF8(info.name)} ({info.max_texture_width}x{info.max_texture_height} max texture size)");
             }
@@ -71,9 +81,37 @@
             }
             return paintEventArgs;
         }
+        public int Width
+        {
+            get
+            {
+                return useBackBuffer ? backBufferWidth : width;
+            }
+        }
+        public int Height
+        {
+            get
+            {
+                return useBackBuffer ? backBufferHeight : height;
+            }
+        }
 
-        public int Width => width;
-        public int Height => height;
+        //public int BackBufferWidth => backBufferWidth;
+        //public int BackBufferHeight => backBufferHeight;
+
+        public bool UseBackBuffer
+        {
+            get => useBackBuffer;
+            set
+            {
+                if (useBackBuffer != value)
+                {
+                    useBackBuffer = value;
+                    CheckSizes();
+                }
+            }
+        }
+
         public Rectangle Viewport
         {
             get => viewPort;
@@ -124,13 +162,47 @@
             get => textureFilter;
             set => textureFilter = value;
         }
-        internal void UpdateSize()
+
+        internal void SetBackBufferSize(int width, int height)
         {
-            _ = SDL_GetRendererOutputSize(handle, out width, out height);
-            _ = SDL_RenderGetViewport(handle, out viewPort);
+            if (backBufferWidth != width || backBufferHeight != height)
+            {
+                backBufferWidth = width;
+                backBufferHeight = height;
+                useBackBuffer = backBufferWidth > 0 && backBufferHeight > 0;
+                CheckSizes();
+            }
+        }
+        internal void CheckSizes()
+        {
+            width = window.Width;
+            height = window.Height;
+            windowRect.Width = width;
+            windowRect.Height = height;
+            backBufferRect.Width = backBufferWidth;
+            backBufferRect.Height = backBufferHeight;
+            //_ = SDL_GetRendererOutputSize(handle, out width, out height);
+            //_ = SDL_RenderGetViewport(handle, out viewPort);
+            if (backBufferHandle != IntPtr.Zero) { SDL_DestroyTexture(backBufferHandle); }
+            backBufferHandle = IntPtr.Zero;
+            if (useBackBuffer)
+            {
+                backBufferHandle = SDL_CreateTexture(handle, SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET, backBufferWidth, backBufferHeight);
+                _ = SDL_SetTextureAlphaMod(backBufferHandle, 255);
+                _ = SDL_SetTextureColorMod(backBufferHandle, 255, 255, 255);
+                _ = SDL_SetTextureBlendMode(backBufferHandle, SDL_BlendMode.BLEND);
+            }
         }
         internal void BeginPaint()
         {
+            if (useBackBuffer)
+            {
+                _ = SDL_SetRenderTarget(handle, backBufferHandle);
+            }
+            else
+            {
+                _ = SDL_SetRenderTarget(handle, IntPtr.Zero);
+            }
             Color = Color.Black;
             BlendMode = BlendMode.None;
             //_ = SDL_SetRenderTarget(handle, IntPtr.Zero);
@@ -141,7 +213,11 @@
 
         internal void EndPaint()
         {
-            //_ = SDL_SetRenderTarget(handle, IntPtr.Zero);
+            if (useBackBuffer)
+            {
+                _ = SDL_SetRenderTarget(handle, IntPtr.Zero);
+                _ = SDL_RenderCopy(handle, backBufferHandle, ref backBufferRect, ref windowRect);
+            }
             SDL_RenderPresent(handle);
         }
 
@@ -268,6 +344,14 @@
                 _ = SDL_RenderCopy(handle, texture.Handle, ref src, ref dst);
             }
         }
+        public void DrawImage(IImage? image, Rectangle src, Rectangle dst, byte alpha)
+        {
+            if (image is SDLTexture texture)
+            {
+                image.AlphaMod = alpha;
+                _ = SDL_RenderCopy(handle, texture.Handle, ref src, ref dst);
+            }
+        }
 
         public void DrawImage(IImage? image, RenderFlip flip)
         {
@@ -292,6 +376,20 @@
             }
         }
 
+        public Size MeasureText(ITextFont? font, string? text)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                if (font == null) { font = app.DefaultFont; }
+                if (font != null)
+                {
+                    return font.MeasureText(text);
+                }
+            }
+            return Size.Empty;
+        }
+
+
         public void DrawIcon(Icons icon, float x, float y, float width, float height, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Center, VerticalAlignment vAlign = VerticalAlignment.Center)
         {
             if (icon != Icons.NONE && app.IconFont != null)
@@ -310,8 +408,22 @@
         {
             if (image != null && image is SDLTexture tex)
             {
-                SDL_SetRenderTarget(handle, tex.Handle);
-                SDL_SetRenderDrawBlendMode(handle, blendMode);
+                IntPtr oldTarget = SDL_GetRenderTarget(handle);
+                prevTargets.Enqueue(oldTarget);
+                _ = SDL_SetRenderTarget(handle, tex.Handle);
+                _ = SDL_SetRenderDrawBlendMode(handle, blendMode);
+            }
+            else
+            {
+                ClearTarget();
+            }
+        }
+        public void ResetTarget()
+        {
+            if (prevTargets.Count > 0)
+            {
+                IntPtr oldTarget = prevTargets.Dequeue();
+                _ = SDL_SetRenderTarget(handle, oldTarget);
             }
             else
             {
@@ -320,8 +432,9 @@
         }
         public void ClearTarget()
         {
-            SDL_SetRenderTarget(handle, IntPtr.Zero);
-            SDL_SetRenderDrawBlendMode(handle, blendMode);
+            _ = SDL_SetRenderTarget(handle, IntPtr.Zero);
+            _ = SDL_SetRenderDrawBlendMode(handle, blendMode);
+            prevTargets.Clear();
         }
 
         public IImage? CreateImage(string name, int width, int height)
@@ -334,7 +447,7 @@
                 if (tex != IntPtr.Zero)
                 {
                     texture = new SDLTexture(CDX.Content.ContentFlags.Created, this, tex, name);
-                    
+
                     Logger.Info($"Image created from scratch '{name}'");
                 }
             }
@@ -862,6 +975,9 @@
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SDL_SetRenderTarget(IntPtr renderer, IntPtr texture);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr SDL_GetRenderTarget(IntPtr renderer);
+
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SDL_RenderCopy(IntPtr renderer, IntPtr texture, [In()] ref Rectangle srcrect, [In()] ref Rectangle dstrect);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int SDL_RenderCopy(IntPtr renderer, IntPtr texture, IntPtr srcrect, [In()] ref Rectangle dstrect);
@@ -931,6 +1047,16 @@
         private static extern int SDL_GetRendererInfo(IntPtr renderer, out SDL_RendererInfo info);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int SDL_GetRenderDriverInfo(int index, out SDL_RendererInfo info);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int SDL_RenderSetLogicalSize(IntPtr renderer, int w, int h);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void SDL_RenderGetLogicalSize(IntPtr renderer, out int w, out int h);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int SDL_RenderSetIntegerScale(IntPtr renderer, [In()][MarshalAs(UnmanagedType.Bool)] bool enable);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int SDL_RenderSetScale(IntPtr renderer, float scaleX, float scaleY);
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void SDL_RenderGetScale(IntPtr renderer, out float scaleX, out float scaleY);
 
     }
 }

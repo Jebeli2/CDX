@@ -3,6 +3,7 @@
     using CDX.Content;
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -20,5 +21,6 @@
         int Descent { get; }
         int LineSkip { get; }
         int Kerning { get; }
+        Size MeasureText(string? text);
     }
 }

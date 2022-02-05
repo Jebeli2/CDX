@@ -13,8 +13,8 @@
             CDXName = "CDXSDL.SDLApplication";
             GUIName = "GadgetGUI.GUISystem";
             //Driver = "direct3d";
-            Driver = "direct3d11";
-            //Driver = "opengl";
+            //Driver = "direct3d11";
+            Driver = "opengl";
             //Driver = "opengles2";
             //Driver = "software";
             FullScreen = false;
@@ -24,7 +24,9 @@
             MaxFPS = 75;
             VSync = false;
             Width = 1024;
-            Height = 720;
+            Height = 768;
+            //BackBufferWidth = 1024;
+            //BackBufferHeight = 576;
         }
 
         public string CDXName { get; set; }
@@ -32,6 +34,8 @@
         public string Driver { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public int BackBufferWidth { get; set; }
+        public int BackBufferHeight { get; set; }
         public bool FullScreen { get; set; }
         public int MaxFPS { get; set; }
         public bool VSync { get; set; }

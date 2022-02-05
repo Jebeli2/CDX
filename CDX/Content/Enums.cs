@@ -14,8 +14,9 @@
         Font = 2,
         Music = 4,
         File = 8,
-        Resource = 16,
-        Created = 32,
-        Internal = 64
+        Data = 16,
+        Resource = 32,
+        Created = 64,
+        Internal = 128
     }
 }

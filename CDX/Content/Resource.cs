@@ -18,6 +18,12 @@
             this.flags = flags;
         }
 
+        public Resource(Resource other)
+        {
+            name = other.name;
+            flags = other.flags;
+        }
+
         public string Name => name;
         public ContentFlags Flags
         {

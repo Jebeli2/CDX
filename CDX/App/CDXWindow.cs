@@ -11,6 +11,7 @@
 
     public abstract class CDXWindow
     {
+        private readonly CDXApplication app;
         protected readonly Window window;
         protected IGraphics graphics;
         protected bool showFPS;
@@ -55,8 +56,9 @@
         private static readonly object touchFingerMotionEventKey = new();
 
         private bool useExtremeFullScreen;
-        protected CDXWindow(Window window)
+        protected CDXWindow(CDXApplication app, Window window)
         {
+            this.app = app;
             graphics = NoGraphics.Instance;
             this.window = window;
             this.window.LinkWindow(this);
@@ -88,6 +90,11 @@
             set => fpsPosY = value;
         }
 
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public int BackBufferWidth { get; set; }
+        public int BackBufferHeight { get; set; }
+
         public bool UseExtremeFullScreen
         {
             get => useExtremeFullScreen;
@@ -97,7 +104,9 @@
             }
         }
         public abstract uint WindowID { get; }
-        public abstract IAudio Audio { get; }
+        public CDXApplication Application => app;
+        public IContentManager Content => app.Content;
+        public IAudio Audio => app.Audio;
         public IGraphics Graphics => graphics;
 
         public event LoadEventHandler WindowLoad
@@ -407,6 +416,7 @@
         public abstract void SetFullScreen(bool fullScreen);
         public abstract void SetPosition(int x, int y);
         public abstract void SetSize(int width, int height);
+        public abstract void SetBackBufferSize(int width, int height);
         public abstract void SetMousePosition(int x, int y);
         public abstract void Show();
         public abstract void Hide();

@@ -2,6 +2,7 @@
 {
     using CDX.App;
     using CDX.Audio;
+    using CDX.Content;
     using CDX.Graphics;
     using CDX.GUI;
     using CDX.Input;
@@ -15,13 +16,14 @@
 
     public class Window
     {
-        private CDXWindow cdxWindow;
+        private CDXWindow? cdxWindow;
         private string title;
         private bool visible = true;
         private bool resizable = true;
         private bool alwaysOnTop;
         private bool borderless;
         private bool fullScreen;
+        private bool useExtremeFullScreen;
         private int display;
         private string driver = "";
         private bool vSync = false;
@@ -29,6 +31,8 @@
         private int y = -1;
         private int width = 640;
         private int height = 480;
+        private int backBufferWidth = 640;
+        private int backBufferHeight = 480;
         private bool showFPS;
         private float fpsPosX;
         private float fpsPosY;
@@ -44,12 +48,13 @@
             this.title = title;
             screen = new NoScreen();
             hotKeyManager = new();
-            cdxWindow = new NoWindow(this);
+            //cdxWindow = new NoWindow(null!, this);
             gui = new NoGUI();
         }
 
-        public IGraphics Graphics => cdxWindow.Graphics;
-        public IAudio Audio => cdxWindow.Audio;
+        public IContentManager Content => cdxWindow?.Content ?? NoContent.Instance;
+        public IGraphics Graphics => cdxWindow?.Graphics ?? NoGraphics.Instance;
+        public IAudio Audio => cdxWindow?.Audio ?? NoAudio.Instance;
 
         public IGUISystem GUI
         {
@@ -76,7 +81,7 @@
                 }
             }
         }
-        public uint WindowID => cdxWindow.WindowID;
+        public uint WindowID => cdxWindow?.WindowID ?? 0xFFFFFFFF;
         public string Title
         {
             get => title;
@@ -85,7 +90,7 @@
                 if (value != title)
                 {
                     title = value;
-                    cdxWindow.SetTitle(title);
+                    cdxWindow?.SetTitle(title);
                 }
             }
         }
@@ -98,7 +103,7 @@
                 if (value != visible)
                 {
                     visible = value;
-                    cdxWindow.SetVisible(visible);
+                    cdxWindow?.SetVisible(visible);
                 }
             }
         }
@@ -111,7 +116,7 @@
                 if (resizable != value)
                 {
                     resizable = value;
-                    cdxWindow.SetResizable(resizable);
+                    cdxWindow?.SetResizable(resizable);
                 }
             }
         }
@@ -124,7 +129,7 @@
                 if (alwaysOnTop != value)
                 {
                     alwaysOnTop = value;
-                    cdxWindow.SetAlwaysOnTop(alwaysOnTop);
+                    cdxWindow?.SetAlwaysOnTop(alwaysOnTop);
                 }
             }
         }
@@ -137,7 +142,7 @@
                 if (borderless != value)
                 {
                     borderless = value;
-                    cdxWindow.SetBorderless(borderless);
+                    cdxWindow?.SetBorderless(borderless);
                 }
             }
         }
@@ -150,17 +155,24 @@
                 if (fullScreen != value)
                 {
                     fullScreen = value;
-                    cdxWindow.SetFullScreen(fullScreen);
+                    cdxWindow?.SetFullScreen(fullScreen);
                 }
             }
         }
 
         public bool UseExtremeFullScreen
         {
-            get => cdxWindow.UseExtremeFullScreen;
+            get => useExtremeFullScreen;
             set
             {
-                cdxWindow.UseExtremeFullScreen = value;
+                if (useExtremeFullScreen != value)
+                {
+                    useExtremeFullScreen = value;
+                    if (cdxWindow != null)
+                    {
+                        cdxWindow.UseExtremeFullScreen = value;
+                    }
+                }
             }
         }
 
@@ -172,7 +184,10 @@
                 if (showFPS != value)
                 {
                     showFPS = value;
-                    cdxWindow.ShowFPS = value;
+                    if (cdxWindow != null)
+                    {
+                        cdxWindow.ShowFPS = value;
+                    }
                 }
             }
         }
@@ -185,7 +200,10 @@
                 if (fpsPosX != value)
                 {
                     fpsPosX = value;
-                    cdxWindow.FPSPosX = value;
+                    if (cdxWindow != null)
+                    {
+                        cdxWindow.FPSPosX = value;
+                    }
                 }
             }
         }
@@ -197,7 +215,10 @@
                 if (fpsPosY != value)
                 {
                     fpsPosY = value;
-                    cdxWindow.FPSPosY = value;
+                    if (cdxWindow != null)
+                    {
+                        cdxWindow.FPSPosY = value;
+                    }
                 }
             }
         }
@@ -246,7 +267,7 @@
                 if (x != value)
                 {
                     x = value;
-                    cdxWindow.SetPosition(x, y);
+                    cdxWindow?.SetPosition(x, y);
                 }
             }
         }
@@ -259,7 +280,7 @@
                 if (y != value)
                 {
                     y = value;
-                    cdxWindow.SetPosition(x, y);
+                    cdxWindow?.SetPosition(x, y);
                 }
             }
         }
@@ -272,7 +293,7 @@
                 if (width != value)
                 {
                     width = value;
-                    cdxWindow.SetSize(width, height);
+                    cdxWindow?.SetSize(width, height);
                 }
             }
         }
@@ -285,7 +306,32 @@
                 if (height != value)
                 {
                     height = value;
-                    cdxWindow.SetSize(width, height);
+                    cdxWindow?.SetSize(width, height);
+                }
+            }
+        }
+
+        public int BackBufferWidth
+        {
+            get => backBufferWidth;
+            set
+            {
+                if (backBufferWidth != value)
+                {
+                    backBufferWidth = value;
+                    cdxWindow?.SetBackBufferSize(backBufferWidth, backBufferHeight);
+                }
+            }
+        }
+        public int BackBufferHeight
+        {
+            get => backBufferHeight;
+            set
+            {
+                if (backBufferHeight != value)
+                {
+                    backBufferHeight = value;
+                    cdxWindow?.SetBackBufferSize(backBufferWidth, backBufferHeight);
                 }
             }
         }
@@ -293,19 +339,22 @@
         public void Show()
         {
             visible = true;
-            cdxWindow.Show();
+            cdxWindow?.Show();
         }
 
         public void Hide()
         {
             visible = false;
-            cdxWindow.Hide();
+            cdxWindow?.Hide();
         }
 
         public void Close()
         {
-            UnlinkWindow(cdxWindow);
-            cdxWindow.Close();
+            if (cdxWindow != null)
+            {
+                UnlinkWindow(cdxWindow);
+                cdxWindow.Close();
+            }
             gui.Shutdown();
         }
         public void ToggleFullScreen()
@@ -315,31 +364,31 @@
 
         public IImage? LoadImage(string fileName)
         {
-            return cdxWindow.Graphics.LoadImage(fileName);
+            return cdxWindow?.Graphics.LoadImage(fileName);
         }
 
         public IImage? LoadImage(byte[] data, string name)
         {
-            return cdxWindow.Graphics.LoadImage(data, name);
+            return cdxWindow?.Graphics.LoadImage(data, name);
         }
 
         public ITextFont? LoadFont(string fileName, int ptSize)
         {
-            return cdxWindow.Graphics.LoadFont(fileName, ptSize);
+            return cdxWindow?.Graphics.LoadFont(fileName, ptSize);
         }
 
         public ITextFont? LoadFont(byte[] data, string name, int ptSize)
         {
-            return cdxWindow.Graphics.LoadFont(data, name, ptSize);
+            return cdxWindow?.Graphics.LoadFont(data, name, ptSize);
         }
 
         public IMusic? LoadMusic(string fileName)
         {
-            return cdxWindow.Audio.LoadMusic(fileName);
+            return cdxWindow?.Audio.LoadMusic(fileName);
         }
         public IMusic? LoadMusic(byte[] data, string name)
         {
-            return cdxWindow.Audio.LoadMusic(data, name);
+            return cdxWindow?.Audio.LoadMusic(data, name);
         }
 
         public void AddApplet(CDXApplet applet)
@@ -356,10 +405,13 @@
         {
             if (!applet.Initialized)
             {
-                applet.InternalOnLoad(new LoadEventArgs(Graphics, cdxWindow));
-                applet.InternalOnSizeChanged(Width, Height);
-                applet.Initialized = true;
-                applet.InternalOnShown(EventArgs.Empty);
+                if (cdxWindow != null)
+                {
+                    applet.InternalOnLoad(new LoadEventArgs(Graphics, cdxWindow));
+                    applet.InternalOnSizeChanged(Width, Height);
+                    applet.Initialized = true;
+                    applet.InternalOnShown(EventArgs.Empty);
+                }
             }
         }
 
@@ -500,6 +552,7 @@
             cdxWindow.ShowFPS = showFPS;
             cdxWindow.FPSPosX = fpsPosX;
             cdxWindow.FPSPosY = fpsPosY;
+            cdxWindow.UseExtremeFullScreen = useExtremeFullScreen;
             cdxWindow.WindowPaint += CdxWindow_WindowPaint;
             cdxWindow.WindowUpdate += CdxWindow_WindowUpdate;
             cdxWindow.WindowLoad += CdxWindow_WindowLoad;
@@ -693,7 +746,7 @@
         {
             frameTime = e.FrameTime;
             OnPaint(e);
-            screen.Render(frameTime);
+            screen.Render(e.Graphics, frameTime);
             gui.Render(e.Graphics, frameTime);
             ForEachEnabledApplet(a => a.OnPaint(e));
         }
@@ -814,7 +867,7 @@
         {
             Logger.Verbose(GetEventLogMsg(e, "Load"));
             OnLoad(e);
-            gui.Initialize(cdxWindow);
+            if (cdxWindow != null) { gui.Initialize(cdxWindow); }
             ForEachEnabledApplet(a => a.InternalOnLoad(e));
         }
     }

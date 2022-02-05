@@ -33,6 +33,9 @@
 
         public Func<IGUISystem, GUI.IScreen?>? InitGUI { get; set; }
         public Window Window => window;
+        public IAudio Audio => window.Audio;
+        public IGraphics Graphics => window.Graphics;
+        public IContentManager Content => window.Content;
         public string Name => name;
         public bool IsVisible => isVisible;
         public bool IsPaused => isPaused;
@@ -55,9 +58,9 @@
             isPaused = true;
             Logger.Info($"Pause {name}");
         }
-        public virtual void Render(FrameTime time)
+        public virtual void Render(IGraphics graphics, FrameTime time)
         {
-            RenderBackground();
+            RenderBackground(graphics);
         }
         public virtual void Resume()
         {
@@ -66,8 +69,8 @@
         }
         public virtual void Show()
         {
-            width = window.Width;
-            height = window.Height;
+            width = Graphics.Width;
+            height = Graphics.Height;
             isVisible = true;
             updateCount = 0;
             Logger.Info($"Show {name} ({width}x{height})");
@@ -91,8 +94,8 @@
 
         public virtual void Resized(int width, int height)
         {
-            this.width = width;
-            this.height = height;
+            this.width = Graphics.Width;
+            this.height = Graphics.Height;
             Logger.Info($"Resized { name} ({ width}x{ height})");
             window.GUI.ScreenResized(width, height);
         }
@@ -103,11 +106,11 @@
             guiScreen = InitGUI?.Invoke(window.GUI);
         }
 
-        protected void RenderBackground()
+        protected void RenderBackground(IGraphics graphics)
         {
             if (bgImage != null)
             {
-                window.Graphics.DrawImage(bgImage, 0, 0, width, height);
+                graphics.DrawImage(bgImage, 0, 0, width, height);
             }
         }
         private void SetBgImage(string name)

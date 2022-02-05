@@ -28,6 +28,15 @@
             this.width = width;
             this.height = height;
         }
+
+        public ImageRegion(IImageRegion other)
+        {
+            image = other.Image;
+            x = other.X;
+            y = other.Y;
+            width = other.Width;
+            height = other.Height;
+        }
         public IImage Image { get => image; }
         public int X { get => x; }
         public int Y { get => y; }

@@ -69,5 +69,9 @@
         public void Update(FrameTime time)
         {
         }
+
+        public void PlayNow(string name, int loops = 1)
+        {
+        }
     }
 }

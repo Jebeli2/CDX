@@ -12,7 +12,7 @@
         {
             string path = Path.GetTempPath();
             string? ext = GetFileExtension(name);
-            string simpleName = RemoveFileExtension(name);
+            string simpleName = RemoveFileExtension(name).Replace('/','_').Replace('\\','_');
             string testName = Path.Combine(path, simpleName);
             string fileName = AddFileExtension(testName, ext);
             if (!File.Exists(fileName)) return fileName;
